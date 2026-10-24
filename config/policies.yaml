@@ -1,0 +1,216 @@
+# QoSBoost Policy & Traffic Classification Configuration
+
+active_profile: "Balanced"
+
+profiles:
+  Balanced:
+    name: "Balanced"
+    description: "Equitable distribution with latency protection for voice and video"
+    classes:
+      voice:
+        priority: 100
+        min_rate_kbps: 200
+        max_rate_kbps: 500
+        target_latency_ms: 30.0
+        target_jitter_ms: 10.0
+        max_loss_percent: 0.5
+        queue_id: 1
+        dscp: 46 # Expedited Forwarding (EF)
+      video:
+        priority: 80
+        min_rate_kbps: 2500
+        max_rate_kbps: 4500
+        target_latency_ms: 60.0
+        target_jitter_ms: 20.0
+        max_loss_percent: 1.0
+        queue_id: 2
+        dscp: 34 # Assured Forwarding 41 (AF41)
+      web:
+        priority: 50
+        min_rate_kbps: 1000
+        max_rate_kbps: 4000
+        target_latency_ms: 120.0
+        target_jitter_ms: 40.0
+        max_loss_percent: 2.0
+        queue_id: 0
+        dscp: 0 # Best Effort
+      bulk:
+        priority: 20
+        min_rate_kbps: 500
+        max_rate_kbps: 8000
+        target_latency_ms: 300.0
+        target_jitter_ms: 100.0
+        max_loss_percent: 5.0
+        queue_id: 3
+        dscp: 10 # AF11 or scavenging
+
+  Voice-First:
+    name: "Voice-First"
+    description: "Strict ultra-low latency guarantees for voice; aggressive throttling of bulk"
+    classes:
+      voice:
+        priority: 100
+        min_rate_kbps: 500
+        max_rate_kbps: 1000
+        target_latency_ms: 20.0
+        target_jitter_ms: 5.0
+        max_loss_percent: 0.2
+        queue_id: 1
+        dscp: 46
+      video:
+        priority: 70
+        min_rate_kbps: 1500
+        max_rate_kbps: 3000
+        target_latency_ms: 80.0
+        target_jitter_ms: 25.0
+        max_loss_percent: 1.5
+        queue_id: 2
+        dscp: 34
+      web:
+        priority: 40
+        min_rate_kbps: 800
+        max_rate_kbps: 3000
+        target_latency_ms: 150.0
+        target_jitter_ms: 50.0
+        max_loss_percent: 3.0
+        queue_id: 0
+        dscp: 0
+      bulk:
+        priority: 10
+        min_rate_kbps: 200
+        max_rate_kbps: 4000
+        target_latency_ms: 400.0
+        target_jitter_ms: 150.0
+        max_loss_percent: 8.0
+        queue_id: 3
+        dscp: 10
+
+  Video-Conference:
+    name: "Video-Conference"
+    description: "Optimized for high-bandwidth HD video feeds and interactive collaboration"
+    classes:
+      voice:
+        priority: 90
+        min_rate_kbps: 200
+        max_rate_kbps: 400
+        target_latency_ms: 35.0
+        target_jitter_ms: 12.0
+        max_loss_percent: 0.8
+        queue_id: 1
+        dscp: 46
+      video:
+        priority: 100
+        min_rate_kbps: 4000
+        max_rate_kbps: 7000
+        target_latency_ms: 50.0
+        target_jitter_ms: 15.0
+        max_loss_percent: 0.5
+        queue_id: 2
+        dscp: 34
+      web:
+        priority: 40
+        min_rate_kbps: 800
+        max_rate_kbps: 2500
+        target_latency_ms: 140.0
+        target_jitter_ms: 45.0
+        max_loss_percent: 2.5
+        queue_id: 0
+        dscp: 0
+      bulk:
+        priority: 10
+        min_rate_kbps: 200
+        max_rate_kbps: 2000
+        target_latency_ms: 500.0
+        target_jitter_ms: 200.0
+        max_loss_percent: 10.0
+        queue_id: 3
+        dscp: 10
+
+# Rule-Based Traffic Classification Rules
+rules:
+  # Voice / VoIP traffic rules (SIP: 5060, RTP: 10000-20000)
+  - id: "rule-voip-sip"
+    class_name: "voice"
+    protocol: "udp"
+    dst_ports: [5060, 5061]
+    dscp_match: null
+    description: "SIP Signaling"
+  - id: "rule-voip-rtp"
+    class_name: "voice"
+    protocol: "udp"
+    port_ranges: [[10000, 20000]]
+    dscp_match: 46
+    description: "RTP Voice Streams"
+  - id: "rule-voip-port-direct"
+    class_name: "voice"
+    protocol: "udp"
+    dst_ports: [5004, 5005]
+    dscp_match: null
+    description: "Direct VoIP stream port"
+
+  # Video conference rules (RTSP: 554, RTMP: 1935, WebRTC: 50000-50100, custom video 5201 UDP)
+  - id: "rule-video-webrtc"
+    class_name: "video"
+    protocol: "udp"
+    port_ranges: [[50000, 50100]]
+    dscp_match: 34
+    description: "WebRTC Video Streams"
+  - id: "rule-video-stream"
+    class_name: "video"
+    protocol: "udp"
+    dst_ports: [554, 1935, 8554, 5002]
+    dscp_match: null
+    description: "Video streaming protocol ports"
+
+  # Web traffic rules (HTTP: 80, HTTPS: 443)
+  - id: "rule-web-traffic"
+    class_name: "web"
+    protocol: "tcp"
+    dst_ports: [80, 443, 8080, 8443]
+    dscp_match: null
+    description: "HTTP and HTTPS web traffic"
+
+  # Bulk traffic rules (iperf3: 5201 TCP, FTP: 20/21, default bulk)
+  - id: "rule-bulk-iperf"
+    class_name: "bulk"
+    protocol: "tcp"
+    dst_ports: [5201, 5202, 5203, 5204]
+    dscp_match: null
+    description: "Bulk data transfers and benchmarking"
+  - id: "rule-bulk-ftp"
+    class_name: "bulk"
+    protocol: "tcp"
+    dst_ports: [20, 21]
+    dscp_match: null
+    description: "FTP bulk transfers"
+
+# Dynamic Bandwidth Allocation Thresholds & Hysteresis
+dynamic_allocation:
+  high_watermark_utilization: 0.80 # 80% link saturation triggers adaptation
+  low_watermark_utilization: 0.60  # 60% link saturation releases adaptation
+  step_down_bulk_percent: 0.25     # Reduce bulk max_rate by 25% each step
+  step_up_realtime_percent: 0.20   # Boost voice/video min_rate by 20%
+  min_bulk_floor_kbps: 150         # Floor so bulk doesn't starve completely
+  cooldown_seconds: 4.0            # Prevents oscillation / flapping
+
+# Metering Configuration (OF1.3 Meters)
+meters:
+  flooder_meter:
+    id: 1
+    rate_kbps: 1000
+    burst_size_kbps: 200
+    action: "drop" # Drop packets exceeding rate
+  bulk_meter:
+    id: 2
+    rate_kbps: 6000
+    burst_size_kbps: 1000
+    action: "dscp_remark" # Remark exceeding packets to lower class
+    remark_dscp: 8
+
+# Admission Control Parameters
+admission_control:
+  enabled: true
+  bottleneck_capacity_kbps: 10000 # 10 Mbps bottleneck link
+  safety_margin_percent: 0.10     # Reserve 10% headroom
+  voice_flow_requirement_kbps: 100
+  video_flow_requirement_kbps: 3000
