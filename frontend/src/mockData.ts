@@ -1,0 +1,354 @@
+import { MetricSnapshot, FlowItem, PoliciesData, AuditEvent } from './types';
+
+export const INITIAL_MOCK_POLICIES: PoliciesData = {
+  active_profile: 'Balanced',
+  qos_enabled: true,
+  profiles: {
+    Balanced: {
+      name: 'Balanced',
+      description: 'Equitable distribution with latency protection for voice and video',
+      classes: {
+        voice: {
+          priority: 100,
+          min_rate_kbps: 200,
+          max_rate_kbps: 500,
+          target_latency_ms: 30.0,
+          target_jitter_ms: 10.0,
+          max_loss_percent: 0.5,
+          queue_id: 1,
+          dscp: 46,
+        },
+        video: {
+          priority: 80,
+          min_rate_kbps: 2500,
+          max_rate_kbps: 4500,
+          target_latency_ms: 60.0,
+          target_jitter_ms: 20.0,
+          max_loss_percent: 1.0,
+          queue_id: 2,
+          dscp: 34,
+        },
+        web: {
+          priority: 50,
+          min_rate_kbps: 1000,
+          max_rate_kbps: 4000,
+          target_latency_ms: 120.0,
+          target_jitter_ms: 40.0,
+          max_loss_percent: 2.0,
+          queue_id: 0,
+          dscp: 0,
+        },
+        bulk: {
+          priority: 20,
+          min_rate_kbps: 500,
+          max_rate_kbps: 8000,
+          target_latency_ms: 300.0,
+          target_jitter_ms: 100.0,
+          max_loss_percent: 5.0,
+          queue_id: 3,
+          dscp: 10,
+        },
+      },
+    },
+    'Voice-First': {
+      name: 'Voice-First',
+      description: 'Strict ultra-low latency guarantees for voice; aggressive throttling of bulk',
+      classes: {
+        voice: {
+          priority: 100,
+          min_rate_kbps: 500,
+          max_rate_kbps: 1000,
+          target_latency_ms: 20.0,
+          target_jitter_ms: 5.0,
+          max_loss_percent: 0.2,
+          queue_id: 1,
+          dscp: 46,
+        },
+        video: {
+          priority: 70,
+          min_rate_kbps: 1500,
+          max_rate_kbps: 3000,
+          target_latency_ms: 80.0,
+          target_jitter_ms: 25.0,
+          max_loss_percent: 1.5,
+          queue_id: 2,
+          dscp: 34,
+        },
+        web: {
+          priority: 40,
+          min_rate_kbps: 800,
+          max_rate_kbps: 3000,
+          target_latency_ms: 150.0,
+          target_jitter_ms: 50.0,
+          max_loss_percent: 3.0,
+          queue_id: 0,
+          dscp: 0,
+        },
+        bulk: {
+          priority: 10,
+          min_rate_kbps: 200,
+          max_rate_kbps: 4000,
+          target_latency_ms: 400.0,
+          target_jitter_ms: 150.0,
+          max_loss_percent: 8.0,
+          queue_id: 3,
+          dscp: 10,
+        },
+      },
+    },
+    'Video-Conference': {
+      name: 'Video-Conference',
+      description: 'Optimized for high-bandwidth HD video feeds and interactive collaboration',
+      classes: {
+        voice: {
+          priority: 90,
+          min_rate_kbps: 200,
+          max_rate_kbps: 400,
+          target_latency_ms: 35.0,
+          target_jitter_ms: 12.0,
+          max_loss_percent: 0.8,
+          queue_id: 1,
+          dscp: 46,
+        },
+        video: {
+          priority: 100,
+          min_rate_kbps: 4000,
+          max_rate_kbps: 7000,
+          target_latency_ms: 50.0,
+          target_jitter_ms: 15.0,
+          max_loss_percent: 0.5,
+          queue_id: 2,
+          dscp: 34,
+        },
+        web: {
+          priority: 40,
+          min_rate_kbps: 800,
+          max_rate_kbps: 2500,
+          target_latency_ms: 140.0,
+          target_jitter_ms: 45.0,
+          max_loss_percent: 2.5,
+          queue_id: 0,
+          dscp: 0,
+        },
+        bulk: {
+          priority: 10,
+          min_rate_kbps: 200,
+          max_rate_kbps: 2000,
+          target_latency_ms: 500.0,
+          target_jitter_ms: 200.0,
+          max_loss_percent: 10.0,
+          queue_id: 3,
+          dscp: 10,
+        },
+      },
+    },
+  },
+  dynamic_allocation: {
+    high_watermark_utilization: 0.80,
+    low_watermark_utilization: 0.60,
+    step_down_bulk_percent: 0.25,
+    cooldown_seconds: 4.0,
+  },
+  meters: {
+    flooder_meter: { id: 1, rate_kbps: 1000, action: 'drop' },
+    bulk_meter: { id: 2, rate_kbps: 6000, action: 'dscp_remark' },
+  },
+};
+
+export const INITIAL_MOCK_FLOWS: FlowItem[] = [
+  {
+    id: 'flow-voip-1',
+    protocol: 'UDP',
+    src_ip: '10.0.0.1',
+    src_port: 49152,
+    dst_ip: '10.0.0.6',
+    dst_port: 5004,
+    class_name: 'voice',
+    queue_id: 1,
+    path: 's1 -> s2 -> s4',
+    rate_kbps: 100.0,
+    packets_count: 3200,
+    bytes_count: 512000,
+    decision: 'admit',
+    last_seen: Date.now(),
+  },
+  {
+    id: 'flow-video-1',
+    protocol: 'UDP',
+    src_ip: '10.0.0.2',
+    src_port: 52345,
+    dst_ip: '10.0.0.6',
+    dst_port: 5002,
+    class_name: 'video',
+    queue_id: 2,
+    path: 's1 -> s2 -> s4',
+    rate_kbps: 3200.0,
+    packets_count: 58400,
+    bytes_count: 76854400,
+    decision: 'admit',
+    last_seen: Date.now(),
+  },
+  {
+    id: 'flow-bulk-1',
+    protocol: 'TCP',
+    src_ip: '10.0.0.3',
+    src_port: 41002,
+    dst_ip: '10.0.0.6',
+    dst_port: 5201,
+    class_name: 'bulk',
+    queue_id: 3,
+    path: 's1 -> s2 -> s4',
+    rate_kbps: 4800.0,
+    packets_count: 142000,
+    bytes_count: 213000000,
+    decision: 'admit',
+    last_seen: Date.now(),
+  },
+  {
+    id: 'flow-bulk-2',
+    protocol: 'TCP',
+    src_ip: '10.0.0.4',
+    src_port: 41004,
+    dst_ip: '10.0.0.6',
+    dst_port: 5202,
+    class_name: 'bulk',
+    queue_id: 3,
+    path: 's1 -> s2 -> s4',
+    rate_kbps: 3200.0,
+    packets_count: 89000,
+    bytes_count: 133500000,
+    decision: 'admit',
+    last_seen: Date.now(),
+  },
+  {
+    id: 'flow-flooder-1',
+    protocol: 'UDP',
+    src_ip: '10.0.0.5',
+    src_port: 9999,
+    dst_ip: '10.0.0.6',
+    dst_port: 9999,
+    class_name: 'bulk',
+    queue_id: 3,
+    path: 's1 -> s2 -> s4',
+    rate_kbps: 1000.0,
+    packets_count: 42000,
+    bytes_count: 21000000,
+    decision: 'downgrade',
+    last_seen: Date.now(),
+  },
+];
+
+export const INITIAL_MOCK_EVENTS: AuditEvent[] = [
+  {
+    id: 1,
+    timestamp: Date.now() / 1000 - 45,
+    event_type: 'ADAPTATION',
+    message: 'Link congestion (88% util). Bulk queue clamped from 8000k -> 4800k.',
+    reason: 'High-watermark threshold exceeded (80%)',
+    before_value: '8000 kbps',
+    after_value: '4800 kbps',
+  },
+  {
+    id: 2,
+    timestamp: Date.now() / 1000 - 30,
+    event_type: 'METER_DROP',
+    message: 'OF1.3 Meter #1 enforced: Rogue UDP flooder on h5 dropped 2500 kbps.',
+    reason: 'Exceeded 1000 kbps meter band',
+    before_value: '3500 kbps burst',
+    after_value: '1000 kbps allowed',
+  },
+  {
+    id: 3,
+    timestamp: Date.now() / 1000 - 20,
+    event_type: 'REROUTE',
+    message: 'QoS Routing: Video stream h2 rerouted via Alternate Path (s1 -> s3 -> s4).',
+    reason: 'Residual bottleneck bandwidth < video reservation requirement',
+    before_value: 'Primary (s1 -> s2 -> s4)',
+    after_value: 'Alternate (s1 -> s3 -> s4)',
+  },
+  {
+    id: 4,
+    timestamp: Date.now() / 1000 - 5,
+    event_type: 'ADMISSION',
+    message: 'Admission Control: Admitted incoming voice call h1 (100 kbps guaranteed).',
+    reason: 'Guaranteed headroom reserved in Queue 1',
+    before_value: 'Requested: 100 kbps',
+    after_value: 'Granted: 100 kbps',
+  },
+];
+
+export function generateMockSnapshot(step: number, qosEnabled: boolean): MetricSnapshot {
+  const t = step % 65;
+  const isCongested = t >= 15 && t <= 60;
+  const isSevere = t >= 40 && t <= 60;
+
+  if (!qosEnabled) {
+    // QoS OFF: Latency and loss spike during congestion
+    const voiceLat = isCongested ? (isSevere ? 180 + Math.random() * 40 : 120 + Math.random() * 30) : 8.5 + Math.random();
+    const voiceJit = isCongested ? (isSevere ? 55 + Math.random() * 15 : 32 + Math.random() * 8) : 1.2 + Math.random() * 0.4;
+    const voiceLoss = isCongested ? (isSevere ? 22 + Math.random() * 6 : 14 + Math.random() * 4) : 0.0;
+    const util = isCongested ? 98.5 : 34.0;
+
+    return {
+      timestamp: Date.now() / 1000,
+      qos_enabled: false,
+      phase: isSevere ? 'Overload: 3 Bulk hosts + UDP flooder active' : isCongested ? 'Congestion: 2 Bulk transfers active' : 'Baseline: Voice & Video active',
+      link_utilization: util,
+      active_flows_count: isCongested ? 5 : 2,
+      voice: {
+        latency_ms: Number(voiceLat.toFixed(1)),
+        jitter_ms: Number(voiceJit.toFixed(1)),
+        loss_percent: Number(voiceLoss.toFixed(1)),
+        throughput_kbps: Number((100 * (1 - voiceLoss / 100)).toFixed(1)),
+      },
+      video: {
+        latency_ms: Number((voiceLat * 1.4).toFixed(1)),
+        throughput_kbps: Number((3200 * (1 - voiceLoss / 100)).toFixed(1)),
+        loss_percent: Number((voiceLoss * 0.8).toFixed(1)),
+      },
+      bulk: {
+        throughput_kbps: isCongested ? 5400 : 0,
+      },
+      flooder: {
+        throughput_kbps: isSevere ? 3500 : 0,
+        meter_drops: 0,
+      },
+      path: 'Primary (s1 -> s2 -> s4)',
+      rerouted: false,
+    };
+  } else {
+    // QoS ON: Real-time queues isolated, zero loss, jitter < 2ms, latency < 12ms
+    const voiceLat = 7.2 + Math.random() * 0.8;
+    const voiceJit = 0.9 + Math.random() * 0.3;
+    const rerouted = isSevere;
+    const util = isCongested ? 86.4 : 33.2;
+
+    return {
+      timestamp: Date.now() / 1000,
+      qos_enabled: true,
+      phase: isSevere ? 'Overload: Flooder metered, Video rerouted to s3' : isCongested ? 'Congestion: Dynamic bulk throttling active' : 'Optimal: Real-time queues isolated',
+      link_utilization: util,
+      active_flows_count: isCongested ? 5 : 2,
+      voice: {
+        latency_ms: Number(voiceLat.toFixed(1)),
+        jitter_ms: Number(voiceJit.toFixed(1)),
+        loss_percent: 0.0,
+        throughput_kbps: 100.0,
+      },
+      video: {
+        latency_ms: Number((voiceLat * 1.2).toFixed(1)),
+        throughput_kbps: 3200.0,
+        loss_percent: 0.0,
+      },
+      bulk: {
+        throughput_kbps: isCongested ? (isSevere ? 3200 : 4800) : 0,
+      },
+      flooder: {
+        throughput_kbps: isSevere ? 1000 : 0,
+        meter_drops: isSevere ? 2500 : 0,
+      },
+      path: rerouted ? 'Alternate (s1 -> s3 -> s4)' : 'Primary (s1 -> s2 -> s4)',
+      rerouted: rerouted,
+    };
+  }
+}
