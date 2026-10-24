@@ -1,0 +1,1796 @@
+{
+  "summary": {
+    "qos_enabled": false,
+    "duration_seconds": 65,
+    "congestion_period_seconds": "15-60s",
+    "avg_voice_latency_ms": 105.43,
+    "max_voice_latency_ms": 192.92,
+    "avg_voice_jitter_ms": 38.57,
+    "avg_voice_loss_percent": 17.77,
+    "max_voice_loss_percent": 28.0
+  },
+  "trajectory": [
+    {
+      "timestamp": 0.0,
+      "qos_enabled": false,
+      "phase": "Baseline: Voice (100k) & Video (3.2M) starting up",
+      "link_utilization": 32.8,
+      "voice": {
+        "latency_ms": 8.08,
+        "jitter_ms": 1.36,
+        "loss_percent": 0.0,
+        "throughput_kbps": 99.8
+      },
+      "video": {
+        "latency_ms": 12.12,
+        "throughput_kbps": 3183.3,
+        "loss_percent": 0.0
+      },
+      "bulk": {
+        "throughput_kbps": 0.0
+      },
+      "flooder": {
+        "throughput_kbps": 0.0,
+        "meter_drops": 0
+      },
+      "path": "Primary (s1 -> s2 -> s4)",
+      "rerouted": false,
+      "events": []
+    },
+    {
+      "timestamp": 1.0,
+      "qos_enabled": false,
+      "phase": "Baseline: Voice (100k) & Video (3.2M) starting up",
+      "link_utilization": 32.3,
+      "voice": {
+        "latency_ms": 9.2,
+        "jitter_ms": 1.24,
+        "loss_percent": 0.0,
+        "throughput_kbps": 100.2
+      },
+      "video": {
+        "latency_ms": 13.8,
+        "throughput_kbps": 3129.1,
+        "loss_percent": 0.0
+      },
+      "bulk": {
+        "throughput_kbps": 0.0
+      },
+      "flooder": {
+        "throughput_kbps": 0.0,
+        "meter_drops": 0
+      },
+      "path": "Primary (s1 -> s2 -> s4)",
+      "rerouted": false,
+      "events": []
+    },
+    {
+      "timestamp": 2.0,
+      "qos_enabled": false,
+      "phase": "Baseline: Voice (100k) & Video (3.2M) starting up",
+      "link_utilization": 33.3,
+      "voice": {
+        "latency_ms": 8.21,
+        "jitter_ms": 1.48,
+        "loss_percent": 0.0,
+        "throughput_kbps": 101.1
+      },
+      "video": {
+        "latency_ms": 12.31,
+        "throughput_kbps": 3228.2,
+        "loss_percent": 0.0
+      },
+      "bulk": {
+        "throughput_kbps": 0.0
+      },
+      "flooder": {
+        "throughput_kbps": 0.0,
+        "meter_drops": 0
+      },
+      "path": "Primary (s1 -> s2 -> s4)",
+      "rerouted": false,
+      "events": []
+    },
+    {
+      "timestamp": 3.0,
+      "qos_enabled": false,
+      "phase": "Baseline: Voice (100k) & Video (3.2M) starting up",
+      "link_utilization": 33.0,
+      "voice": {
+        "latency_ms": 8.41,
+        "jitter_ms": 0.96,
+        "loss_percent": 0.0,
+        "throughput_kbps": 101.4
+      },
+      "video": {
+        "latency_ms": 12.61,
+        "throughput_kbps": 3196.6,
+        "loss_percent": 0.0
+      },
+      "bulk": {
+        "throughput_kbps": 0.0
+      },
+      "flooder": {
+        "throughput_kbps": 0.0,
+        "meter_drops": 0
+      },
+      "path": "Primary (s1 -> s2 -> s4)",
+      "rerouted": false,
+      "events": []
+    },
+    {
+      "timestamp": 4.0,
+      "qos_enabled": false,
+      "phase": "Baseline: Voice (100k) & Video (3.2M) starting up",
+      "link_utilization": 32.7,
+      "voice": {
+        "latency_ms": 8.98,
+        "jitter_ms": 0.95,
+        "loss_percent": 0.0,
+        "throughput_kbps": 104.5
+      },
+      "video": {
+        "latency_ms": 13.47,
+        "throughput_kbps": 3170.3,
+        "loss_percent": 0.0
+      },
+      "bulk": {
+        "throughput_kbps": 0.0
+      },
+      "flooder": {
+        "throughput_kbps": 0.0,
+        "meter_drops": 0
+      },
+      "path": "Primary (s1 -> s2 -> s4)",
+      "rerouted": false,
+      "events": []
+    },
+    {
+      "timestamp": 5.0,
+      "qos_enabled": false,
+      "phase": "Baseline: Voice (100k) & Video (3.2M) starting up",
+      "link_utilization": 33.5,
+      "voice": {
+        "latency_ms": 8.28,
+        "jitter_ms": 1.19,
+        "loss_percent": 0.0,
+        "throughput_kbps": 99.3
+      },
+      "video": {
+        "latency_ms": 12.42,
+        "throughput_kbps": 3246.3,
+        "loss_percent": 0.0
+      },
+      "bulk": {
+        "throughput_kbps": 0.0
+      },
+      "flooder": {
+        "throughput_kbps": 0.0,
+        "meter_drops": 0
+      },
+      "path": "Primary (s1 -> s2 -> s4)",
+      "rerouted": false,
+      "events": []
+    },
+    {
+      "timestamp": 6.0,
+      "qos_enabled": false,
+      "phase": "Baseline: Voice (100k) & Video (3.2M) starting up",
+      "link_utilization": 33.3,
+      "voice": {
+        "latency_ms": 8.06,
+        "jitter_ms": 1.43,
+        "loss_percent": 0.0,
+        "throughput_kbps": 98.3
+      },
+      "video": {
+        "latency_ms": 12.09,
+        "throughput_kbps": 3227.2,
+        "loss_percent": 0.0
+      },
+      "bulk": {
+        "throughput_kbps": 0.0
+      },
+      "flooder": {
+        "throughput_kbps": 0.0,
+        "meter_drops": 0
+      },
+      "path": "Primary (s1 -> s2 -> s4)",
+      "rerouted": false,
+      "events": []
+    },
+    {
+      "timestamp": 7.0,
+      "qos_enabled": false,
+      "phase": "Baseline: Voice (100k) & Video (3.2M) starting up",
+      "link_utilization": 32.1,
+      "voice": {
+        "latency_ms": 8.43,
+        "jitter_ms": 1.07,
+        "loss_percent": 0.0,
+        "throughput_kbps": 103.8
+      },
+      "video": {
+        "latency_ms": 12.64,
+        "throughput_kbps": 3110.4,
+        "loss_percent": 0.0
+      },
+      "bulk": {
+        "throughput_kbps": 0.0
+      },
+      "flooder": {
+        "throughput_kbps": 0.0,
+        "meter_drops": 0
+      },
+      "path": "Primary (s1 -> s2 -> s4)",
+      "rerouted": false,
+      "events": []
+    },
+    {
+      "timestamp": 8.0,
+      "qos_enabled": false,
+      "phase": "Baseline: Voice (100k) & Video (3.2M) starting up",
+      "link_utilization": 33.7,
+      "voice": {
+        "latency_ms": 8.8,
+        "jitter_ms": 1.08,
+        "loss_percent": 0.0,
+        "throughput_kbps": 104.5
+      },
+      "video": {
+        "latency_ms": 13.2,
+        "throughput_kbps": 3266.6,
+        "loss_percent": 0.0
+      },
+      "bulk": {
+        "throughput_kbps": 0.0
+      },
+      "flooder": {
+        "throughput_kbps": 0.0,
+        "meter_drops": 0
+      },
+      "path": "Primary (s1 -> s2 -> s4)",
+      "rerouted": false,
+      "events": []
+    },
+    {
+      "timestamp": 9.0,
+      "qos_enabled": false,
+      "phase": "Baseline: Voice (100k) & Video (3.2M) starting up",
+      "link_utilization": 32.0,
+      "voice": {
+        "latency_ms": 8.31,
+        "jitter_ms": 1.53,
+        "loss_percent": 0.0,
+        "throughput_kbps": 95.8
+      },
+      "video": {
+        "latency_ms": 12.46,
+        "throughput_kbps": 3106.6,
+        "loss_percent": 0.0
+      },
+      "bulk": {
+        "throughput_kbps": 0.0
+      },
+      "flooder": {
+        "throughput_kbps": 0.0,
+        "meter_drops": 0
+      },
+      "path": "Primary (s1 -> s2 -> s4)",
+      "rerouted": false,
+      "events": []
+    },
+    {
+      "timestamp": 10.0,
+      "qos_enabled": false,
+      "phase": "Baseline: Voice (100k) & Video (3.2M) starting up",
+      "link_utilization": 33.3,
+      "voice": {
+        "latency_ms": 8.87,
+        "jitter_ms": 1.0,
+        "loss_percent": 0.0,
+        "throughput_kbps": 97.9
+      },
+      "video": {
+        "latency_ms": 13.31,
+        "throughput_kbps": 3232.9,
+        "loss_percent": 0.0
+      },
+      "bulk": {
+        "throughput_kbps": 0.0
+      },
+      "flooder": {
+        "throughput_kbps": 0.0,
+        "meter_drops": 0
+      },
+      "path": "Primary (s1 -> s2 -> s4)",
+      "rerouted": false,
+      "events": []
+    },
+    {
+      "timestamp": 11.0,
+      "qos_enabled": false,
+      "phase": "Baseline: Voice (100k) & Video (3.2M) starting up",
+      "link_utilization": 33.1,
+      "voice": {
+        "latency_ms": 9.15,
+        "jitter_ms": 1.48,
+        "loss_percent": 0.0,
+        "throughput_kbps": 95.2
+      },
+      "video": {
+        "latency_ms": 13.72,
+        "throughput_kbps": 3211.9,
+        "loss_percent": 0.0
+      },
+      "bulk": {
+        "throughput_kbps": 0.0
+      },
+      "flooder": {
+        "throughput_kbps": 0.0,
+        "meter_drops": 0
+      },
+      "path": "Primary (s1 -> s2 -> s4)",
+      "rerouted": false,
+      "events": []
+    },
+    {
+      "timestamp": 12.0,
+      "qos_enabled": false,
+      "phase": "Baseline: Voice (100k) & Video (3.2M) starting up",
+      "link_utilization": 32.8,
+      "voice": {
+        "latency_ms": 9.2,
+        "jitter_ms": 1.23,
+        "loss_percent": 0.0,
+        "throughput_kbps": 103.5
+      },
+      "video": {
+        "latency_ms": 13.8,
+        "throughput_kbps": 3173.4,
+        "loss_percent": 0.0
+      },
+      "bulk": {
+        "throughput_kbps": 0.0
+      },
+      "flooder": {
+        "throughput_kbps": 0.0,
+        "meter_drops": 0
+      },
+      "path": "Primary (s1 -> s2 -> s4)",
+      "rerouted": false,
+      "events": []
+    },
+    {
+      "timestamp": 13.0,
+      "qos_enabled": false,
+      "phase": "Baseline: Voice (100k) & Video (3.2M) starting up",
+      "link_utilization": 32.1,
+      "voice": {
+        "latency_ms": 9.03,
+        "jitter_ms": 1.31,
+        "loss_percent": 0.0,
+        "throughput_kbps": 99.4
+      },
+      "video": {
+        "latency_ms": 13.55,
+        "throughput_kbps": 3106.4,
+        "loss_percent": 0.0
+      },
+      "bulk": {
+        "throughput_kbps": 0.0
+      },
+      "flooder": {
+        "throughput_kbps": 0.0,
+        "meter_drops": 0
+      },
+      "path": "Primary (s1 -> s2 -> s4)",
+      "rerouted": false,
+      "events": []
+    },
+    {
+      "timestamp": 14.0,
+      "qos_enabled": false,
+      "phase": "Baseline: Voice (100k) & Video (3.2M) starting up",
+      "link_utilization": 32.6,
+      "voice": {
+        "latency_ms": 9.05,
+        "jitter_ms": 1.17,
+        "loss_percent": 0.0,
+        "throughput_kbps": 100.6
+      },
+      "video": {
+        "latency_ms": 13.58,
+        "throughput_kbps": 3156.7,
+        "loss_percent": 0.0
+      },
+      "bulk": {
+        "throughput_kbps": 0.0
+      },
+      "flooder": {
+        "throughput_kbps": 0.0,
+        "meter_drops": 0
+      },
+      "path": "Primary (s1 -> s2 -> s4)",
+      "rerouted": false,
+      "events": []
+    },
+    {
+      "timestamp": 15.0,
+      "qos_enabled": false,
+      "phase": "Congestion: Saturating TCP bulk transfers active",
+      "link_utilization": 100.0,
+      "voice": {
+        "latency_ms": 46.67,
+        "jitter_ms": 17.95,
+        "loss_percent": 12.5,
+        "throughput_kbps": 83.8
+      },
+      "video": {
+        "latency_ms": 70.0,
+        "throughput_kbps": 2845.0,
+        "loss_percent": 10.0
+      },
+      "bulk": {
+        "throughput_kbps": 6922.5
+      },
+      "flooder": {
+        "throughput_kbps": 0.0,
+        "meter_drops": 0
+      },
+      "path": "Primary (s1 -> s2 -> s4)",
+      "rerouted": false,
+      "events": []
+    },
+    {
+      "timestamp": 16.0,
+      "qos_enabled": false,
+      "phase": "Congestion: Saturating TCP bulk transfers active",
+      "link_utilization": 100.0,
+      "voice": {
+        "latency_ms": 54.52,
+        "jitter_ms": 19.93,
+        "loss_percent": 10.46,
+        "throughput_kbps": 86.9
+      },
+      "video": {
+        "latency_ms": 81.79,
+        "throughput_kbps": 2822.4,
+        "loss_percent": 8.36
+      },
+      "bulk": {
+        "throughput_kbps": 6989.9
+      },
+      "flooder": {
+        "throughput_kbps": 0.0,
+        "meter_drops": 0
+      },
+      "path": "Primary (s1 -> s2 -> s4)",
+      "rerouted": false,
+      "events": []
+    },
+    {
+      "timestamp": 17.0,
+      "qos_enabled": false,
+      "phase": "Congestion: Saturating TCP bulk transfers active",
+      "link_utilization": 100.0,
+      "voice": {
+        "latency_ms": 37.48,
+        "jitter_ms": 17.56,
+        "loss_percent": 7.21,
+        "throughput_kbps": 92.5
+      },
+      "video": {
+        "latency_ms": 56.22,
+        "throughput_kbps": 2999.9,
+        "loss_percent": 5.77
+      },
+      "bulk": {
+        "throughput_kbps": 7063.7
+      },
+      "flooder": {
+        "throughput_kbps": 0.0,
+        "meter_drops": 0
+      },
+      "path": "Primary (s1 -> s2 -> s4)",
+      "rerouted": false,
+      "events": []
+    },
+    {
+      "timestamp": 18.0,
+      "qos_enabled": false,
+      "phase": "Congestion: Saturating TCP bulk transfers active",
+      "link_utilization": 100.0,
+      "voice": {
+        "latency_ms": 53.66,
+        "jitter_ms": 15.19,
+        "loss_percent": 11.02,
+        "throughput_kbps": 87.9
+      },
+      "video": {
+        "latency_ms": 80.49,
+        "throughput_kbps": 2776.2,
+        "loss_percent": 8.82
+      },
+      "bulk": {
+        "throughput_kbps": 7001.2
+      },
+      "flooder": {
+        "throughput_kbps": 0.0,
+        "meter_drops": 0
+      },
+      "path": "Primary (s1 -> s2 -> s4)",
+      "rerouted": false,
+      "events": []
+    },
+    {
+      "timestamp": 19.0,
+      "qos_enabled": false,
+      "phase": "Congestion: Saturating TCP bulk transfers active",
+      "link_utilization": 100.0,
+      "voice": {
+        "latency_ms": 45.98,
+        "jitter_ms": 23.96,
+        "loss_percent": 11.7,
+        "throughput_kbps": 86.8
+      },
+      "video": {
+        "latency_ms": 68.97,
+        "throughput_kbps": 2911.8,
+        "loss_percent": 9.36
+      },
+      "bulk": {
+        "throughput_kbps": 6844.0
+      },
+      "flooder": {
+        "throughput_kbps": 0.0,
+        "meter_drops": 0
+      },
+      "path": "Primary (s1 -> s2 -> s4)",
+      "rerouted": false,
+      "events": []
+    },
+    {
+      "timestamp": 20.0,
+      "qos_enabled": false,
+      "phase": "Congestion: Saturating TCP bulk transfers active",
+      "link_utilization": 100.0,
+      "voice": {
+        "latency_ms": 56.17,
+        "jitter_ms": 24.44,
+        "loss_percent": 10.03,
+        "throughput_kbps": 89.4
+      },
+      "video": {
+        "latency_ms": 84.26,
+        "throughput_kbps": 2930.5,
+        "loss_percent": 8.03
+      },
+      "bulk": {
+        "throughput_kbps": 7137.0
+      },
+      "flooder": {
+        "throughput_kbps": 0.0,
+        "meter_drops": 0
+      },
+      "path": "Primary (s1 -> s2 -> s4)",
+      "rerouted": false,
+      "events": []
+    },
+    {
+      "timestamp": 21.0,
+      "qos_enabled": false,
+      "phase": "Congestion: Saturating TCP bulk transfers active",
+      "link_utilization": 100.0,
+      "voice": {
+        "latency_ms": 51.52,
+        "jitter_ms": 18.18,
+        "loss_percent": 9.04,
+        "throughput_kbps": 93.8
+      },
+      "video": {
+        "latency_ms": 77.27,
+        "throughput_kbps": 2969.9,
+        "loss_percent": 7.24
+      },
+      "bulk": {
+        "throughput_kbps": 6939.9
+      },
+      "flooder": {
+        "throughput_kbps": 0.0,
+        "meter_drops": 0
+      },
+      "path": "Primary (s1 -> s2 -> s4)",
+      "rerouted": false,
+      "events": []
+    },
+    {
+      "timestamp": 22.0,
+      "qos_enabled": false,
+      "phase": "Congestion: Saturating TCP bulk transfers active",
+      "link_utilization": 100.0,
+      "voice": {
+        "latency_ms": 47.49,
+        "jitter_ms": 18.6,
+        "loss_percent": 9.25,
+        "throughput_kbps": 94.8
+      },
+      "video": {
+        "latency_ms": 71.23,
+        "throughput_kbps": 2889.5,
+        "loss_percent": 7.4
+      },
+      "bulk": {
+        "throughput_kbps": 7125.3
+      },
+      "flooder": {
+        "throughput_kbps": 0.0,
+        "meter_drops": 0
+      },
+      "path": "Primary (s1 -> s2 -> s4)",
+      "rerouted": false,
+      "events": []
+    },
+    {
+      "timestamp": 23.0,
+      "qos_enabled": false,
+      "phase": "Congestion: Saturating TCP bulk transfers active",
+      "link_utilization": 100.0,
+      "voice": {
+        "latency_ms": 51.39,
+        "jitter_ms": 17.45,
+        "loss_percent": 9.29,
+        "throughput_kbps": 94.4
+      },
+      "video": {
+        "latency_ms": 77.09,
+        "throughput_kbps": 2941.0,
+        "loss_percent": 7.43
+      },
+      "bulk": {
+        "throughput_kbps": 6935.5
+      },
+      "flooder": {
+        "throughput_kbps": 0.0,
+        "meter_drops": 0
+      },
+      "path": "Primary (s1 -> s2 -> s4)",
+      "rerouted": false,
+      "events": []
+    },
+    {
+      "timestamp": 24.0,
+      "qos_enabled": false,
+      "phase": "Congestion: Saturating TCP bulk transfers active",
+      "link_utilization": 100.0,
+      "voice": {
+        "latency_ms": 51.95,
+        "jitter_ms": 23.39,
+        "loss_percent": 10.04,
+        "throughput_kbps": 87.3
+      },
+      "video": {
+        "latency_ms": 77.92,
+        "throughput_kbps": 2895.8,
+        "loss_percent": 8.04
+      },
+      "bulk": {
+        "throughput_kbps": 7045.9
+      },
+      "flooder": {
+        "throughput_kbps": 0.0,
+        "meter_drops": 0
+      },
+      "path": "Primary (s1 -> s2 -> s4)",
+      "rerouted": false,
+      "events": []
+    },
+    {
+      "timestamp": 25.0,
+      "qos_enabled": false,
+      "phase": "Congestion: Saturating TCP bulk transfers active",
+      "link_utilization": 100.0,
+      "voice": {
+        "latency_ms": 47.41,
+        "jitter_ms": 17.83,
+        "loss_percent": 12.62,
+        "throughput_kbps": 89.6
+      },
+      "video": {
+        "latency_ms": 71.11,
+        "throughput_kbps": 2775.8,
+        "loss_percent": 10.09
+      },
+      "bulk": {
+        "throughput_kbps": 6979.7
+      },
+      "flooder": {
+        "throughput_kbps": 0.0,
+        "meter_drops": 0
+      },
+      "path": "Primary (s1 -> s2 -> s4)",
+      "rerouted": false,
+      "events": []
+    },
+    {
+      "timestamp": 26.0,
+      "qos_enabled": false,
+      "phase": "Congestion: Saturating TCP bulk transfers active",
+      "link_utilization": 100.0,
+      "voice": {
+        "latency_ms": 43.15,
+        "jitter_ms": 14.89,
+        "loss_percent": 7.92,
+        "throughput_kbps": 91.3
+      },
+      "video": {
+        "latency_ms": 64.73,
+        "throughput_kbps": 2984.8,
+        "loss_percent": 6.34
+      },
+      "bulk": {
+        "throughput_kbps": 6999.4
+      },
+      "flooder": {
+        "throughput_kbps": 0.0,
+        "meter_drops": 0
+      },
+      "path": "Primary (s1 -> s2 -> s4)",
+      "rerouted": false,
+      "events": []
+    },
+    {
+      "timestamp": 27.0,
+      "qos_enabled": false,
+      "phase": "Congestion: Saturating TCP bulk transfers active",
+      "link_utilization": 100.0,
+      "voice": {
+        "latency_ms": 55.26,
+        "jitter_ms": 23.63,
+        "loss_percent": 10.79,
+        "throughput_kbps": 85.3
+      },
+      "video": {
+        "latency_ms": 82.9,
+        "throughput_kbps": 2925.8,
+        "loss_percent": 8.63
+      },
+      "bulk": {
+        "throughput_kbps": 7050.1
+      },
+      "flooder": {
+        "throughput_kbps": 0.0,
+        "meter_drops": 0
+      },
+      "path": "Primary (s1 -> s2 -> s4)",
+      "rerouted": false,
+      "events": []
+    },
+    {
+      "timestamp": 28.0,
+      "qos_enabled": false,
+      "phase": "Congestion: Saturating TCP bulk transfers active",
+      "link_utilization": 100.0,
+      "voice": {
+        "latency_ms": 43.6,
+        "jitter_ms": 20.74,
+        "loss_percent": 8.95,
+        "throughput_kbps": 90.0
+      },
+      "video": {
+        "latency_ms": 65.4,
+        "throughput_kbps": 2881.4,
+        "loss_percent": 7.16
+      },
+      "bulk": {
+        "throughput_kbps": 7087.0
+      },
+      "flooder": {
+        "throughput_kbps": 0.0,
+        "meter_drops": 0
+      },
+      "path": "Primary (s1 -> s2 -> s4)",
+      "rerouted": false,
+      "events": []
+    },
+    {
+      "timestamp": 29.0,
+      "qos_enabled": false,
+      "phase": "Congestion: Saturating TCP bulk transfers active",
+      "link_utilization": 100.0,
+      "voice": {
+        "latency_ms": 49.81,
+        "jitter_ms": 21.87,
+        "loss_percent": 9.39,
+        "throughput_kbps": 94.0
+      },
+      "video": {
+        "latency_ms": 74.71,
+        "throughput_kbps": 2839.1,
+        "loss_percent": 7.51
+      },
+      "bulk": {
+        "throughput_kbps": 7051.5
+      },
+      "flooder": {
+        "throughput_kbps": 0.0,
+        "meter_drops": 0
+      },
+      "path": "Primary (s1 -> s2 -> s4)",
+      "rerouted": false,
+      "events": []
+    },
+    {
+      "timestamp": 30.0,
+      "qos_enabled": false,
+      "phase": "Congestion: Saturating TCP bulk transfers active",
+      "link_utilization": 100.0,
+      "voice": {
+        "latency_ms": 52.8,
+        "jitter_ms": 17.8,
+        "loss_percent": 10.9,
+        "throughput_kbps": 88.5
+      },
+      "video": {
+        "latency_ms": 79.2,
+        "throughput_kbps": 2828.5,
+        "loss_percent": 8.72
+      },
+      "bulk": {
+        "throughput_kbps": 7024.1
+      },
+      "flooder": {
+        "throughput_kbps": 0.0,
+        "meter_drops": 0
+      },
+      "path": "Primary (s1 -> s2 -> s4)",
+      "rerouted": false,
+      "events": []
+    },
+    {
+      "timestamp": 31.0,
+      "qos_enabled": false,
+      "phase": "Congestion: Saturating TCP bulk transfers active",
+      "link_utilization": 100.0,
+      "voice": {
+        "latency_ms": 55.34,
+        "jitter_ms": 18.43,
+        "loss_percent": 8.66,
+        "throughput_kbps": 88.7
+      },
+      "video": {
+        "latency_ms": 83.01,
+        "throughput_kbps": 2996.9,
+        "loss_percent": 6.93
+      },
+      "bulk": {
+        "throughput_kbps": 7048.9
+      },
+      "flooder": {
+        "throughput_kbps": 0.0,
+        "meter_drops": 0
+      },
+      "path": "Primary (s1 -> s2 -> s4)",
+      "rerouted": false,
+      "events": []
+    },
+    {
+      "timestamp": 32.0,
+      "qos_enabled": false,
+      "phase": "Congestion: Saturating TCP bulk transfers active",
+      "link_utilization": 100.0,
+      "voice": {
+        "latency_ms": 48.48,
+        "jitter_ms": 23.87,
+        "loss_percent": 11.53,
+        "throughput_kbps": 88.4
+      },
+      "video": {
+        "latency_ms": 72.73,
+        "throughput_kbps": 2764.2,
+        "loss_percent": 9.22
+      },
+      "bulk": {
+        "throughput_kbps": 7015.4
+      },
+      "flooder": {
+        "throughput_kbps": 0.0,
+        "meter_drops": 0
+      },
+      "path": "Primary (s1 -> s2 -> s4)",
+      "rerouted": false,
+      "events": []
+    },
+    {
+      "timestamp": 33.0,
+      "qos_enabled": false,
+      "phase": "Congestion: Saturating TCP bulk transfers active",
+      "link_utilization": 100.0,
+      "voice": {
+        "latency_ms": 53.22,
+        "jitter_ms": 19.87,
+        "loss_percent": 11.02,
+        "throughput_kbps": 93.1
+      },
+      "video": {
+        "latency_ms": 79.83,
+        "throughput_kbps": 2932.9,
+        "loss_percent": 8.82
+      },
+      "bulk": {
+        "throughput_kbps": 7095.0
+      },
+      "flooder": {
+        "throughput_kbps": 0.0,
+        "meter_drops": 0
+      },
+      "path": "Primary (s1 -> s2 -> s4)",
+      "rerouted": false,
+      "events": []
+    },
+    {
+      "timestamp": 34.0,
+      "qos_enabled": false,
+      "phase": "Congestion: Saturating TCP bulk transfers active",
+      "link_utilization": 100.0,
+      "voice": {
+        "latency_ms": 49.02,
+        "jitter_ms": 15.52,
+        "loss_percent": 10.54,
+        "throughput_kbps": 87.4
+      },
+      "video": {
+        "latency_ms": 73.53,
+        "throughput_kbps": 2853.1,
+        "loss_percent": 8.43
+      },
+      "bulk": {
+        "throughput_kbps": 7047.9
+      },
+      "flooder": {
+        "throughput_kbps": 0.0,
+        "meter_drops": 0
+      },
+      "path": "Primary (s1 -> s2 -> s4)",
+      "rerouted": false,
+      "events": []
+    },
+    {
+      "timestamp": 35.0,
+      "qos_enabled": false,
+      "phase": "Congestion: Saturating TCP bulk transfers active",
+      "link_utilization": 100.0,
+      "voice": {
+        "latency_ms": 50.64,
+        "jitter_ms": 15.36,
+        "loss_percent": 11.19,
+        "throughput_kbps": 87.5
+      },
+      "video": {
+        "latency_ms": 75.96,
+        "throughput_kbps": 2853.5,
+        "loss_percent": 8.95
+      },
+      "bulk": {
+        "throughput_kbps": 6961.4
+      },
+      "flooder": {
+        "throughput_kbps": 0.0,
+        "meter_drops": 0
+      },
+      "path": "Primary (s1 -> s2 -> s4)",
+      "rerouted": false,
+      "events": []
+    },
+    {
+      "timestamp": 36.0,
+      "qos_enabled": false,
+      "phase": "Congestion: Saturating TCP bulk transfers active",
+      "link_utilization": 100.0,
+      "voice": {
+        "latency_ms": 46.62,
+        "jitter_ms": 16.15,
+        "loss_percent": 9.44,
+        "throughput_kbps": 91.7
+      },
+      "video": {
+        "latency_ms": 69.93,
+        "throughput_kbps": 2963.3,
+        "loss_percent": 7.56
+      },
+      "bulk": {
+        "throughput_kbps": 7109.4
+      },
+      "flooder": {
+        "throughput_kbps": 0.0,
+        "meter_drops": 0
+      },
+      "path": "Primary (s1 -> s2 -> s4)",
+      "rerouted": false,
+      "events": []
+    },
+    {
+      "timestamp": 37.0,
+      "qos_enabled": false,
+      "phase": "Congestion: Saturating TCP bulk transfers active",
+      "link_utilization": 100.0,
+      "voice": {
+        "latency_ms": 51.02,
+        "jitter_ms": 16.61,
+        "loss_percent": 9.75,
+        "throughput_kbps": 90.1
+      },
+      "video": {
+        "latency_ms": 76.53,
+        "throughput_kbps": 2967.0,
+        "loss_percent": 7.8
+      },
+      "bulk": {
+        "throughput_kbps": 7010.8
+      },
+      "flooder": {
+        "throughput_kbps": 0.0,
+        "meter_drops": 0
+      },
+      "path": "Primary (s1 -> s2 -> s4)",
+      "rerouted": false,
+      "events": []
+    },
+    {
+      "timestamp": 38.0,
+      "qos_enabled": false,
+      "phase": "Congestion: Saturating TCP bulk transfers active",
+      "link_utilization": 100.0,
+      "voice": {
+        "latency_ms": 61.46,
+        "jitter_ms": 19.93,
+        "loss_percent": 12.98,
+        "throughput_kbps": 82.9
+      },
+      "video": {
+        "latency_ms": 92.2,
+        "throughput_kbps": 2848.2,
+        "loss_percent": 10.38
+      },
+      "bulk": {
+        "throughput_kbps": 6920.5
+      },
+      "flooder": {
+        "throughput_kbps": 0.0,
+        "meter_drops": 0
+      },
+      "path": "Primary (s1 -> s2 -> s4)",
+      "rerouted": false,
+      "events": []
+    },
+    {
+      "timestamp": 39.0,
+      "qos_enabled": false,
+      "phase": "Congestion: Saturating TCP bulk transfers active",
+      "link_utilization": 100.0,
+      "voice": {
+        "latency_ms": 49.91,
+        "jitter_ms": 22.13,
+        "loss_percent": 11.32,
+        "throughput_kbps": 87.7
+      },
+      "video": {
+        "latency_ms": 74.86,
+        "throughput_kbps": 2780.5,
+        "loss_percent": 9.05
+      },
+      "bulk": {
+        "throughput_kbps": 7054.1
+      },
+      "flooder": {
+        "throughput_kbps": 0.0,
+        "meter_drops": 0
+      },
+      "path": "Primary (s1 -> s2 -> s4)",
+      "rerouted": false,
+      "events": []
+    },
+    {
+      "timestamp": 40.0,
+      "qos_enabled": false,
+      "phase": "Severe Overload: 3 bulk hosts + rogue UDP flooder active",
+      "link_utilization": 100.0,
+      "voice": {
+        "latency_ms": 180.8,
+        "jitter_ms": 65.23,
+        "loss_percent": 28.0,
+        "throughput_kbps": 69.9
+      },
+      "video": {
+        "latency_ms": 271.2,
+        "throughput_kbps": 2322.1,
+        "loss_percent": 22.4
+      },
+      "bulk": {
+        "throughput_kbps": 7036.2
+      },
+      "flooder": {
+        "throughput_kbps": 3444.8,
+        "meter_drops": 0
+      },
+      "path": "Primary (s1 -> s2 -> s4)",
+      "rerouted": false,
+      "events": []
+    },
+    {
+      "timestamp": 41.0,
+      "qos_enabled": false,
+      "phase": "Severe Overload: 3 bulk hosts + rogue UDP flooder active",
+      "link_utilization": 100.0,
+      "voice": {
+        "latency_ms": 187.06,
+        "jitter_ms": 67.36,
+        "loss_percent": 28.0,
+        "throughput_kbps": 68.4
+      },
+      "video": {
+        "latency_ms": 280.59,
+        "throughput_kbps": 2322.5,
+        "loss_percent": 22.4
+      },
+      "bulk": {
+        "throughput_kbps": 6901.9
+      },
+      "flooder": {
+        "throughput_kbps": 3464.4,
+        "meter_drops": 0
+      },
+      "path": "Primary (s1 -> s2 -> s4)",
+      "rerouted": false,
+      "events": []
+    },
+    {
+      "timestamp": 42.0,
+      "qos_enabled": false,
+      "phase": "Severe Overload: 3 bulk hosts + rogue UDP flooder active",
+      "link_utilization": 100.0,
+      "voice": {
+        "latency_ms": 179.14,
+        "jitter_ms": 63.32,
+        "loss_percent": 28.0,
+        "throughput_kbps": 69.2
+      },
+      "video": {
+        "latency_ms": 268.71,
+        "throughput_kbps": 2287.8,
+        "loss_percent": 22.4
+      },
+      "bulk": {
+        "throughput_kbps": 7030.8
+      },
+      "flooder": {
+        "throughput_kbps": 3488.0,
+        "meter_drops": 0
+      },
+      "path": "Primary (s1 -> s2 -> s4)",
+      "rerouted": false,
+      "events": []
+    },
+    {
+      "timestamp": 43.0,
+      "qos_enabled": false,
+      "phase": "Severe Overload: 3 bulk hosts + rogue UDP flooder active",
+      "link_utilization": 100.0,
+      "voice": {
+        "latency_ms": 189.26,
+        "jitter_ms": 64.97,
+        "loss_percent": 28.0,
+        "throughput_kbps": 71.0
+      },
+      "video": {
+        "latency_ms": 283.89,
+        "throughput_kbps": 2332.7,
+        "loss_percent": 22.4
+      },
+      "bulk": {
+        "throughput_kbps": 6964.5
+      },
+      "flooder": {
+        "throughput_kbps": 3575.3,
+        "meter_drops": 0
+      },
+      "path": "Primary (s1 -> s2 -> s4)",
+      "rerouted": false,
+      "events": []
+    },
+    {
+      "timestamp": 44.0,
+      "qos_enabled": false,
+      "phase": "Severe Overload: 3 bulk hosts + rogue UDP flooder active",
+      "link_utilization": 100.0,
+      "voice": {
+        "latency_ms": 170.16,
+        "jitter_ms": 62.07,
+        "loss_percent": 28.0,
+        "throughput_kbps": 70.0
+      },
+      "video": {
+        "latency_ms": 255.25,
+        "throughput_kbps": 2374.5,
+        "loss_percent": 22.4
+      },
+      "bulk": {
+        "throughput_kbps": 6735.9
+      },
+      "flooder": {
+        "throughput_kbps": 3423.8,
+        "meter_drops": 0
+      },
+      "path": "Primary (s1 -> s2 -> s4)",
+      "rerouted": false,
+      "events": []
+    },
+    {
+      "timestamp": 45.0,
+      "qos_enabled": false,
+      "phase": "Severe Overload: 3 bulk hosts + rogue UDP flooder active",
+      "link_utilization": 100.0,
+      "voice": {
+        "latency_ms": 186.6,
+        "jitter_ms": 69.04,
+        "loss_percent": 28.0,
+        "throughput_kbps": 73.6
+      },
+      "video": {
+        "latency_ms": 279.9,
+        "throughput_kbps": 2317.4,
+        "loss_percent": 22.4
+      },
+      "bulk": {
+        "throughput_kbps": 6990.8
+      },
+      "flooder": {
+        "throughput_kbps": 3458.9,
+        "meter_drops": 0
+      },
+      "path": "Primary (s1 -> s2 -> s4)",
+      "rerouted": false,
+      "events": []
+    },
+    {
+      "timestamp": 46.0,
+      "qos_enabled": false,
+      "phase": "Severe Overload: 3 bulk hosts + rogue UDP flooder active",
+      "link_utilization": 100.0,
+      "voice": {
+        "latency_ms": 184.21,
+        "jitter_ms": 62.04,
+        "loss_percent": 28.0,
+        "throughput_kbps": 71.6
+      },
+      "video": {
+        "latency_ms": 276.32,
+        "throughput_kbps": 2316.9,
+        "loss_percent": 22.4
+      },
+      "bulk": {
+        "throughput_kbps": 6950.2
+      },
+      "flooder": {
+        "throughput_kbps": 3426.1,
+        "meter_drops": 0
+      },
+      "path": "Primary (s1 -> s2 -> s4)",
+      "rerouted": false,
+      "events": []
+    },
+    {
+      "timestamp": 47.0,
+      "qos_enabled": false,
+      "phase": "Severe Overload: 3 bulk hosts + rogue UDP flooder active",
+      "link_utilization": 100.0,
+      "voice": {
+        "latency_ms": 187.19,
+        "jitter_ms": 66.19,
+        "loss_percent": 28.0,
+        "throughput_kbps": 73.3
+      },
+      "video": {
+        "latency_ms": 280.78,
+        "throughput_kbps": 2366.0,
+        "loss_percent": 22.4
+      },
+      "bulk": {
+        "throughput_kbps": 6822.4
+      },
+      "flooder": {
+        "throughput_kbps": 3518.2,
+        "meter_drops": 0
+      },
+      "path": "Primary (s1 -> s2 -> s4)",
+      "rerouted": false,
+      "events": []
+    },
+    {
+      "timestamp": 48.0,
+      "qos_enabled": false,
+      "phase": "Severe Overload: 3 bulk hosts + rogue UDP flooder active",
+      "link_utilization": 100.0,
+      "voice": {
+        "latency_ms": 174.16,
+        "jitter_ms": 60.99,
+        "loss_percent": 28.0,
+        "throughput_kbps": 69.0
+      },
+      "video": {
+        "latency_ms": 261.24,
+        "throughput_kbps": 2302.7,
+        "loss_percent": 22.4
+      },
+      "bulk": {
+        "throughput_kbps": 6661.4
+      },
+      "flooder": {
+        "throughput_kbps": 3552.5,
+        "meter_drops": 0
+      },
+      "path": "Primary (s1 -> s2 -> s4)",
+      "rerouted": false,
+      "events": []
+    },
+    {
+      "timestamp": 49.0,
+      "qos_enabled": false,
+      "phase": "Severe Overload: 3 bulk hosts + rogue UDP flooder active",
+      "link_utilization": 100.0,
+      "voice": {
+        "latency_ms": 192.92,
+        "jitter_ms": 69.0,
+        "loss_percent": 28.0,
+        "throughput_kbps": 75.1
+      },
+      "video": {
+        "latency_ms": 289.38,
+        "throughput_kbps": 2371.7,
+        "loss_percent": 22.4
+      },
+      "bulk": {
+        "throughput_kbps": 6993.8
+      },
+      "flooder": {
+        "throughput_kbps": 3555.8,
+        "meter_drops": 0
+      },
+      "path": "Primary (s1 -> s2 -> s4)",
+      "rerouted": false,
+      "events": []
+    },
+    {
+      "timestamp": 50.0,
+      "qos_enabled": false,
+      "phase": "Severe Overload: 3 bulk hosts + rogue UDP flooder active",
+      "link_utilization": 100.0,
+      "voice": {
+        "latency_ms": 182.02,
+        "jitter_ms": 66.93,
+        "loss_percent": 28.0,
+        "throughput_kbps": 68.8
+      },
+      "video": {
+        "latency_ms": 273.03,
+        "throughput_kbps": 2327.1,
+        "loss_percent": 22.4
+      },
+      "bulk": {
+        "throughput_kbps": 6918.3
+      },
+      "flooder": {
+        "throughput_kbps": 3569.1,
+        "meter_drops": 0
+      },
+      "path": "Primary (s1 -> s2 -> s4)",
+      "rerouted": false,
+      "events": []
+    },
+    {
+      "timestamp": 51.0,
+      "qos_enabled": false,
+      "phase": "Severe Overload: 3 bulk hosts + rogue UDP flooder active",
+      "link_utilization": 100.0,
+      "voice": {
+        "latency_ms": 177.57,
+        "jitter_ms": 63.29,
+        "loss_percent": 28.0,
+        "throughput_kbps": 72.4
+      },
+      "video": {
+        "latency_ms": 266.36,
+        "throughput_kbps": 2254.8,
+        "loss_percent": 22.4
+      },
+      "bulk": {
+        "throughput_kbps": 6885.9
+      },
+      "flooder": {
+        "throughput_kbps": 3578.6,
+        "meter_drops": 0
+      },
+      "path": "Primary (s1 -> s2 -> s4)",
+      "rerouted": false,
+      "events": []
+    },
+    {
+      "timestamp": 52.0,
+      "qos_enabled": false,
+      "phase": "Severe Overload: 3 bulk hosts + rogue UDP flooder active",
+      "link_utilization": 100.0,
+      "voice": {
+        "latency_ms": 180.59,
+        "jitter_ms": 66.84,
+        "loss_percent": 28.0,
+        "throughput_kbps": 74.5
+      },
+      "video": {
+        "latency_ms": 270.88,
+        "throughput_kbps": 2287.9,
+        "loss_percent": 22.4
+      },
+      "bulk": {
+        "throughput_kbps": 6765.0
+      },
+      "flooder": {
+        "throughput_kbps": 3482.2,
+        "meter_drops": 0
+      },
+      "path": "Primary (s1 -> s2 -> s4)",
+      "rerouted": false,
+      "events": []
+    },
+    {
+      "timestamp": 53.0,
+      "qos_enabled": false,
+      "phase": "Severe Overload: 3 bulk hosts + rogue UDP flooder active",
+      "link_utilization": 100.0,
+      "voice": {
+        "latency_ms": 171.16,
+        "jitter_ms": 60.17,
+        "loss_percent": 28.0,
+        "throughput_kbps": 75.2
+      },
+      "video": {
+        "latency_ms": 256.74,
+        "throughput_kbps": 2248.6,
+        "loss_percent": 22.4
+      },
+      "bulk": {
+        "throughput_kbps": 6864.6
+      },
+      "flooder": {
+        "throughput_kbps": 3534.5,
+        "meter_drops": 0
+      },
+      "path": "Primary (s1 -> s2 -> s4)",
+      "rerouted": false,
+      "events": []
+    },
+    {
+      "timestamp": 54.0,
+      "qos_enabled": false,
+      "phase": "Severe Overload: 3 bulk hosts + rogue UDP flooder active",
+      "link_utilization": 100.0,
+      "voice": {
+        "latency_ms": 163.56,
+        "jitter_ms": 62.83,
+        "loss_percent": 28.0,
+        "throughput_kbps": 73.3
+      },
+      "video": {
+        "latency_ms": 245.34,
+        "throughput_kbps": 2248.7,
+        "loss_percent": 22.4
+      },
+      "bulk": {
+        "throughput_kbps": 6646.4
+      },
+      "flooder": {
+        "throughput_kbps": 3407.2,
+        "meter_drops": 0
+      },
+      "path": "Primary (s1 -> s2 -> s4)",
+      "rerouted": false,
+      "events": []
+    },
+    {
+      "timestamp": 55.0,
+      "qos_enabled": false,
+      "phase": "Severe Overload: 3 bulk hosts + rogue UDP flooder active",
+      "link_utilization": 100.0,
+      "voice": {
+        "latency_ms": 170.02,
+        "jitter_ms": 65.96,
+        "loss_percent": 28.0,
+        "throughput_kbps": 68.6
+      },
+      "video": {
+        "latency_ms": 255.02,
+        "throughput_kbps": 2372.3,
+        "loss_percent": 22.4
+      },
+      "bulk": {
+        "throughput_kbps": 6748.2
+      },
+      "flooder": {
+        "throughput_kbps": 3445.3,
+        "meter_drops": 0
+      },
+      "path": "Primary (s1 -> s2 -> s4)",
+      "rerouted": false,
+      "events": []
+    },
+    {
+      "timestamp": 56.0,
+      "qos_enabled": false,
+      "phase": "Severe Overload: 3 bulk hosts + rogue UDP flooder active",
+      "link_utilization": 100.0,
+      "voice": {
+        "latency_ms": 178.76,
+        "jitter_ms": 64.24,
+        "loss_percent": 28.0,
+        "throughput_kbps": 74.7
+      },
+      "video": {
+        "latency_ms": 268.15,
+        "throughput_kbps": 2322.8,
+        "loss_percent": 22.4
+      },
+      "bulk": {
+        "throughput_kbps": 6835.7
+      },
+      "flooder": {
+        "throughput_kbps": 3561.0,
+        "meter_drops": 0
+      },
+      "path": "Primary (s1 -> s2 -> s4)",
+      "rerouted": false,
+      "events": []
+    },
+    {
+      "timestamp": 57.0,
+      "qos_enabled": false,
+      "phase": "Severe Overload: 3 bulk hosts + rogue UDP flooder active",
+      "link_utilization": 100.0,
+      "voice": {
+        "latency_ms": 168.63,
+        "jitter_ms": 64.97,
+        "loss_percent": 28.0,
+        "throughput_kbps": 73.7
+      },
+      "video": {
+        "latency_ms": 252.95,
+        "throughput_kbps": 2318.6,
+        "loss_percent": 22.4
+      },
+      "bulk": {
+        "throughput_kbps": 6674.7
+      },
+      "flooder": {
+        "throughput_kbps": 3538.6,
+        "meter_drops": 0
+      },
+      "path": "Primary (s1 -> s2 -> s4)",
+      "rerouted": false,
+      "events": []
+    },
+    {
+      "timestamp": 58.0,
+      "qos_enabled": false,
+      "phase": "Severe Overload: 3 bulk hosts + rogue UDP flooder active",
+      "link_utilization": 100.0,
+      "voice": {
+        "latency_ms": 178.17,
+        "jitter_ms": 61.15,
+        "loss_percent": 28.0,
+        "throughput_kbps": 70.7
+      },
+      "video": {
+        "latency_ms": 267.25,
+        "throughput_kbps": 2283.9,
+        "loss_percent": 22.4
+      },
+      "bulk": {
+        "throughput_kbps": 6872.1
+      },
+      "flooder": {
+        "throughput_kbps": 3478.0,
+        "meter_drops": 0
+      },
+      "path": "Primary (s1 -> s2 -> s4)",
+      "rerouted": false,
+      "events": []
+    },
+    {
+      "timestamp": 59.0,
+      "qos_enabled": false,
+      "phase": "Severe Overload: 3 bulk hosts + rogue UDP flooder active",
+      "link_utilization": 100.0,
+      "voice": {
+        "latency_ms": 184.61,
+        "jitter_ms": 64.65,
+        "loss_percent": 28.0,
+        "throughput_kbps": 69.7
+      },
+      "video": {
+        "latency_ms": 276.92,
+        "throughput_kbps": 2309.5,
+        "loss_percent": 22.4
+      },
+      "bulk": {
+        "throughput_kbps": 6840.4
+      },
+      "flooder": {
+        "throughput_kbps": 3583.3,
+        "meter_drops": 0
+      },
+      "path": "Primary (s1 -> s2 -> s4)",
+      "rerouted": false,
+      "events": []
+    },
+    {
+      "timestamp": 60.0,
+      "qos_enabled": false,
+      "phase": "Recovery: Bulk flows terminated; returning to normal",
+      "link_utilization": 32.6,
+      "voice": {
+        "latency_ms": 8.69,
+        "jitter_ms": 1.52,
+        "loss_percent": 0.0,
+        "throughput_kbps": 104.1
+      },
+      "video": {
+        "latency_ms": 13.03,
+        "throughput_kbps": 3152.3,
+        "loss_percent": 0.0
+      },
+      "bulk": {
+        "throughput_kbps": 0.0
+      },
+      "flooder": {
+        "throughput_kbps": 0.0,
+        "meter_drops": 0
+      },
+      "path": "Primary (s1 -> s2 -> s4)",
+      "rerouted": false,
+      "events": []
+    },
+    {
+      "timestamp": 61.0,
+      "qos_enabled": false,
+      "phase": "Recovery: Bulk flows terminated; returning to normal",
+      "link_utilization": 32.2,
+      "voice": {
+        "latency_ms": 9.21,
+        "jitter_ms": 0.96,
+        "loss_percent": 0.0,
+        "throughput_kbps": 101.2
+      },
+      "video": {
+        "latency_ms": 13.81,
+        "throughput_kbps": 3118.4,
+        "loss_percent": 0.0
+      },
+      "bulk": {
+        "throughput_kbps": 0.0
+      },
+      "flooder": {
+        "throughput_kbps": 0.0,
+        "meter_drops": 0
+      },
+      "path": "Primary (s1 -> s2 -> s4)",
+      "rerouted": false,
+      "events": []
+    },
+    {
+      "timestamp": 62.0,
+      "qos_enabled": false,
+      "phase": "Recovery: Bulk flows terminated; returning to normal",
+      "link_utilization": 33.1,
+      "voice": {
+        "latency_ms": 8.6,
+        "jitter_ms": 1.13,
+        "loss_percent": 0.0,
+        "throughput_kbps": 104.3
+      },
+      "video": {
+        "latency_ms": 12.9,
+        "throughput_kbps": 3208.7,
+        "loss_percent": 0.0
+      },
+      "bulk": {
+        "throughput_kbps": 0.0
+      },
+      "flooder": {
+        "throughput_kbps": 0.0,
+        "meter_drops": 0
+      },
+      "path": "Primary (s1 -> s2 -> s4)",
+      "rerouted": false,
+      "events": []
+    },
+    {
+      "timestamp": 63.0,
+      "qos_enabled": false,
+      "phase": "Recovery: Bulk flows terminated; returning to normal",
+      "link_utilization": 32.7,
+      "voice": {
+        "latency_ms": 8.14,
+        "jitter_ms": 1.58,
+        "loss_percent": 0.0,
+        "throughput_kbps": 99.1
+      },
+      "video": {
+        "latency_ms": 12.21,
+        "throughput_kbps": 3169.2,
+        "loss_percent": 0.0
+      },
+      "bulk": {
+        "throughput_kbps": 0.0
+      },
+      "flooder": {
+        "throughput_kbps": 0.0,
+        "meter_drops": 0
+      },
+      "path": "Primary (s1 -> s2 -> s4)",
+      "rerouted": false,
+      "events": []
+    },
+    {
+      "timestamp": 64.0,
+      "qos_enabled": false,
+      "phase": "Recovery: Bulk flows terminated; returning to normal",
+      "link_utilization": 32.1,
+      "voice": {
+        "latency_ms": 8.13,
+        "jitter_ms": 1.23,
+        "loss_percent": 0.0,
+        "throughput_kbps": 98.5
+      },
+      "video": {
+        "latency_ms": 12.2,
+        "throughput_kbps": 3106.9,
+        "loss_percent": 0.0
+      },
+      "bulk": {
+        "throughput_kbps": 0.0
+      },
+      "flooder": {
+        "throughput_kbps": 0.0,
+        "meter_drops": 0
+      },
+      "path": "Primary (s1 -> s2 -> s4)",
+      "rerouted": false,
+      "events": []
+    },
+    {
+      "timestamp": 65.0,
+      "qos_enabled": false,
+      "phase": "Recovery: Bulk flows terminated; returning to normal",
+      "link_utilization": 32.2,
+      "voice": {
+        "latency_ms": 8.54,
+        "jitter_ms": 1.55,
+        "loss_percent": 0.0,
+        "throughput_kbps": 97.0
+      },
+      "video": {
+        "latency_ms": 12.8,
+        "throughput_kbps": 3118.5,
+        "loss_percent": 0.0
+      },
+      "bulk": {
+        "throughput_kbps": 0.0
+      },
+      "flooder": {
+        "throughput_kbps": 0.0,
+        "meter_drops": 0
+      },
+      "path": "Primary (s1 -> s2 -> s4)",
+      "rerouted": false,
+      "events": []
+    }
+  ]
+}
