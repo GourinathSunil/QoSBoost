@@ -1,6 +1,6 @@
 import React from 'react';
 import { useQoSStore } from '../store/useQoSStore';
-import { TopologyGraph } from '../components/TopologyGraph';
+import { ReactFlowTopology } from '../components/ReactFlowTopology';
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, LineChart, Line, ReferenceLine } from 'recharts';
 import { Activity, Zap, CheckCircle2, AlertTriangle } from 'lucide-react';
 
@@ -113,8 +113,8 @@ export const OverviewPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Topology Canvas */}
-      <TopologyGraph />
+      {/* Topology Canvas (React Flow) */}
+      <ReactFlowTopology />
 
       {/* Telemetry Charts Row */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(460px, 1fr))', gap: 'var(--space-lg)' }}>

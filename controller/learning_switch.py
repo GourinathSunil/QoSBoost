@@ -10,8 +10,8 @@ Implements standard self-learning MAC table logic:
 Designed to execute as a Ryu application (`RyuApp`) or directly within the QoSBoost controller.
 """
 
-from typing import Dict, Optional, Tuple, List, Any
 import logging
+from typing import Dict, Tuple
 
 logger = logging.getLogger("qosboost.controller.learning_switch")
 
@@ -20,8 +20,9 @@ try:
     from ryu.base import app_manager
     from ryu.controller import ofp_event
     from ryu.controller.handler import CONFIG_DISPATCHER, MAIN_DISPATCHER, set_ev_cls
+    from ryu.lib.packet import ether_types, ethernet, packet
     from ryu.ofproto import ofproto_v1_3
-    from ryu.lib.packet import packet, ethernet, ether_types
+
     HAS_RYU = True
 except ImportError:
     HAS_RYU = False
@@ -33,14 +34,17 @@ class PureL2LearningTable:
     Pure Python L2 learning switch table logic.
     Decoupled from Ryu networking runtime so it can be verified with unit tests anywhere.
     """
+
     def __init__(self):
         # mac_to_port[dpid][mac_address] = port_no
         self.mac_to_port: Dict[str, Dict[str, int]] = {}
 
-    def learn_and_route(self, dpid: str, src_mac: str, dst_mac: str, in_port: int) -> Tuple[int, bool]:
+    def learn_and_route(
+        self, dpid: str, src_mac: str, dst_mac: str, in_port: int
+    ) -> Tuple[int, bool]:
         """
         Learns source MAC on in_port for datapath dpid, and determines forwarding port.
-        
+
         Returns:
             (out_port, should_install_flow_rule)
             out_port: port number or -1 for FLOOD.
@@ -50,7 +54,9 @@ class PureL2LearningTable:
         self.mac_to_port[dpid][src_mac] = in_port
 
         # Check if dst is broadcast/multicast or unknown
-        if dst_mac.lower() in ("ff:ff:ff:ff:ff:ff", "01:00:5e:00:00:01") or dst_mac.startswith("33:33"):
+        if dst_mac.lower() in ("ff:ff:ff:ff:ff:ff", "01:00:5e:00:00:01") or dst_mac.startswith(
+            "33:33"
+        ):
             return -1, False  # Flood broadcast
 
         if dst_mac in self.mac_to_port[dpid]:
@@ -61,6 +67,7 @@ class PureL2LearningTable:
 
 
 if HAS_RYU:
+
     class RyuL2LearningSwitch(app_manager.RyuApp):
         OFP_VERSIONS = [ofproto_v1_3.OFP_VERSION]
 
@@ -80,12 +87,7 @@ if HAS_RYU:
             match = parser.OFPMatch()
             actions = [parser.OFPActionOutput(ofproto.OFPP_CONTROLLER, ofproto.OFPCML_NO_BUFFER)]
             inst = [parser.OFPInstructionActions(ofproto.OFPIT_APPLY_ACTIONS, actions)]
-            mod = parser.OFPFlowMod(
-                datapath=datapath,
-                priority=0,
-                match=match,
-                instructions=inst
-            )
+            mod = parser.OFPFlowMod(datapath=datapath, priority=0, match=match, instructions=inst)
             datapath.send_msg(mod)
             logger.info("Installed table-miss flow rule on Datapath %s", datapath.id)
 
@@ -95,7 +97,7 @@ if HAS_RYU:
             datapath = msg.datapath
             ofproto = datapath.ofproto
             parser = datapath.ofproto_parser
-            in_port = msg.match['in_port']
+            in_port = msg.match["in_port"]
 
             pkt = packet.Packet(msg.data)
             eth = pkt.get_protocols(ethernet.ethernet)[0]
@@ -127,17 +129,14 @@ if HAS_RYU:
                         buffer_id=msg.buffer_id,
                         priority=1,
                         match=match,
-                        instructions=inst
+                        instructions=inst,
                     )
                     datapath.send_msg(mod)
                     return
                 else:
                     inst = [parser.OFPInstructionActions(ofproto.OFPIT_APPLY_ACTIONS, actions)]
                     mod = parser.OFPFlowMod(
-                        datapath=datapath,
-                        priority=1,
-                        match=match,
-                        instructions=inst
+                        datapath=datapath, priority=1, match=match, instructions=inst
                     )
                     datapath.send_msg(mod)
 
@@ -150,6 +149,6 @@ if HAS_RYU:
                 buffer_id=msg.buffer_id,
                 in_port=in_port,
                 actions=actions,
-                data=data
+                data=data,
             )
             datapath.send_msg(out)

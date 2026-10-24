@@ -2,7 +2,6 @@
 Unit tests for Phase 6: Dynamic Bandwidth Allocation and OF1.3 Meters.
 """
 
-import pytest
 from controller.policy_engine import DynamicBandwidthAllocator, MeterManager
 from controller.queue_manager import QueueManager
 
@@ -10,10 +9,7 @@ from controller.queue_manager import QueueManager
 def test_dynamic_allocation_trigger_and_hysteresis():
     qm = QueueManager()
     allocator = DynamicBandwidthAllocator(
-        queue_manager=qm,
-        high_watermark=0.80,
-        low_watermark=0.60,
-        cooldown_seconds=4.0
+        queue_manager=qm, high_watermark=0.80, low_watermark=0.60, cooldown_seconds=4.0
     )
 
     t0 = 100.0

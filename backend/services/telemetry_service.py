@@ -9,14 +9,14 @@ Maintains:
 - WebSocket live broadcasting
 """
 
-import time
 import asyncio
 import logging
-from typing import List, Dict, Any, Optional
+import time
 from collections import deque
+from typing import Any, Dict, List, Optional
 
-from backend.models.schemas import MetricSnapshot, MetricSnapshotDB, FlowItem, EventRecordDB
-from backend.database import save_snapshot, save_event
+from backend.database import save_snapshot
+from backend.models.schemas import FlowItem, MetricSnapshot, MetricSnapshotDB
 from backend.ws.broadcaster import manager
 from network.traffic import SimulatedScenarioEngine
 
@@ -52,7 +52,7 @@ class TelemetryService:
                 packets_count=1240,
                 bytes_count=198400,
                 decision="admit",
-                last_seen=time.time()
+                last_seen=time.time(),
             ),
             "flow-video-1": FlowItem(
                 id="flow-video-1",
@@ -68,7 +68,7 @@ class TelemetryService:
                 packets_count=45100,
                 bytes_count=59351600,
                 decision="admit",
-                last_seen=time.time()
+                last_seen=time.time(),
             ),
             "flow-bulk-1": FlowItem(
                 id="flow-bulk-1",
@@ -84,7 +84,7 @@ class TelemetryService:
                 packets_count=98200,
                 bytes_count=147300000,
                 decision="admit",
-                last_seen=time.time()
+                last_seen=time.time(),
             ),
             "flow-bulk-2": FlowItem(
                 id="flow-bulk-2",
@@ -100,8 +100,8 @@ class TelemetryService:
                 packets_count=62100,
                 bytes_count=93150000,
                 decision="admit",
-                last_seen=time.time()
-            )
+                last_seen=time.time(),
+            ),
         }
 
     def set_qos_enabled(self, enabled: bool):
@@ -163,7 +163,7 @@ class TelemetryService:
                     flooder=snapshot_raw["flooder"],
                     path=snapshot_raw["path"],
                     rerouted=snapshot_raw["rerouted"],
-                    events=snapshot_raw.get("events", [])
+                    events=snapshot_raw.get("events", []),
                 )
 
                 # Add to in-memory rolling history
@@ -181,7 +181,7 @@ class TelemetryService:
                         voice_throughput_kbps=snapshot.voice.get("throughput_kbps", 0.0),
                         video_throughput_kbps=snapshot.video.get("throughput_kbps", 0.0),
                         bulk_throughput_kbps=snapshot.bulk.get("throughput_kbps", 0.0),
-                        active_path=snapshot.path
+                        active_path=snapshot.path,
                     )
                     save_snapshot(db_snap)
 

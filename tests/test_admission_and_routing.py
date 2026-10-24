@@ -2,7 +2,6 @@
 Unit tests for Phase 7: Admission Control and QoS Routing.
 """
 
-import pytest
 from controller.admission import AdmissionController
 from controller.qos_router import QoSRouter
 
@@ -12,22 +11,30 @@ def test_admission_control_decisions():
     ac = AdmissionController(bottleneck_capacity_kbps=10000.0, safety_margin=0.10)
 
     # 1. Ample capacity: Current in-use = 2000k, new voice flow (100k) -> ADMIT
-    d1 = ac.evaluate(flow_id="f1", class_name="voice", requested_kbps=100.0, current_in_use_kbps=2000.0)
+    d1 = ac.evaluate(
+        flow_id="f1", class_name="voice", requested_kbps=100.0, current_in_use_kbps=2000.0
+    )
     assert d1.decision == "admit"
     assert d1.granted_rate_kbps == 100.0
 
     # 2. Ample capacity for HD video (3000k) -> ADMIT
-    d2 = ac.evaluate(flow_id="f2", class_name="video", requested_kbps=3000.0, current_in_use_kbps=2000.0)
+    d2 = ac.evaluate(
+        flow_id="f2", class_name="video", requested_kbps=3000.0, current_in_use_kbps=2000.0
+    )
     assert d2.decision == "admit"
     assert d2.granted_rate_kbps == 3000.0
 
     # 3. Constrained capacity: Current in-use = 7500k (1500k left). Video request -> DOWNGRADE to SD (1200k)
-    d3 = ac.evaluate(flow_id="f3", class_name="video", requested_kbps=3000.0, current_in_use_kbps=7500.0)
+    d3 = ac.evaluate(
+        flow_id="f3", class_name="video", requested_kbps=3000.0, current_in_use_kbps=7500.0
+    )
     assert d3.decision == "downgrade"
     assert d3.granted_rate_kbps == 1200.0
 
     # 4. Saturated capacity: Current in-use = 8800k (200k left). Video request -> REJECT
-    d4 = ac.evaluate(flow_id="f4", class_name="video", requested_kbps=3000.0, current_in_use_kbps=8800.0)
+    d4 = ac.evaluate(
+        flow_id="f4", class_name="video", requested_kbps=3000.0, current_in_use_kbps=8800.0
+    )
     assert d4.decision == "reject"
     assert d4.granted_rate_kbps == 0.0
 

@@ -12,12 +12,12 @@ Manages the lifecycle of the Mininet emulation and traffic generation:
 - Collects live measurements and downsamples to SQLite.
 """
 
+import logging
 import os
-import sys
 import shutil
 import subprocess
-import logging
-from typing import Dict, Any, Optional
+import sys
+from typing import Optional
 
 logger = logging.getLogger("qosboost.backend.experiment_runner")
 
@@ -30,17 +30,31 @@ class ExperimentRunner:
         self.has_mininet = shutil.which("mn") is not None
         self._mininet_proc: Optional[subprocess.Popen] = None
 
-    def launch_network_topology(self, controller_ip: str = "127.0.0.1", controller_port: int = 6653) -> bool:
+    def launch_network_topology(
+        self, controller_ip: str = "127.0.0.1", controller_port: int = 6653
+    ) -> bool:
         """Launches the Mininet topology script as a managed background process."""
         if not self.has_mininet:
             logger.info("Mininet not detected on host. Using simulated network emulation engine.")
             return True
 
-        topo_script = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "network", "topology.py"))
-        cmd = ["sudo", sys.executable, topo_script, "--controller-ip", controller_ip, "--controller-port", str(controller_port)]
-        
+        topo_script = os.path.abspath(
+            os.path.join(os.path.dirname(__file__), "..", "..", "network", "topology.py")
+        )
+        cmd = [
+            "sudo",
+            sys.executable,
+            topo_script,
+            "--controller-ip",
+            controller_ip,
+            "--controller-port",
+            str(controller_port),
+        ]
+
         try:
-            self._mininet_proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            self._mininet_proc = subprocess.Popen(
+                cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+            )
             self.is_running = True
             logger.info("Mininet topology launched successfully (PID %d).", self._mininet_proc.pid)
             return True

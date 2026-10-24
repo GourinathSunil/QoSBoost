@@ -2,10 +2,12 @@
 REST routes for telemetry and historical metrics.
 """
 
+from typing import Any, Dict, List, Optional
+
 from fastapi import APIRouter, Query
-from typing import List, Dict, Any, Optional
-from backend.services.telemetry_service import telemetry_service
+
 from backend.database import get_recent_snapshots
+from backend.services.telemetry_service import telemetry_service
 
 router = APIRouter(prefix="/api/telemetry", tags=["telemetry"])
 
@@ -39,15 +41,11 @@ def get_telemetry_history(limit: int = Query(default=60, ge=1, le=300)) -> List[
                 "latency_ms": r.voice_latency_ms,
                 "jitter_ms": r.voice_jitter_ms,
                 "loss_percent": r.voice_loss_percent,
-                "throughput_kbps": r.voice_throughput_kbps
+                "throughput_kbps": r.voice_throughput_kbps,
             },
-            "video": {
-                "throughput_kbps": r.video_throughput_kbps
-            },
-            "bulk": {
-                "throughput_kbps": r.bulk_throughput_kbps
-            },
-            "path": r.active_path
+            "video": {"throughput_kbps": r.video_throughput_kbps},
+            "bulk": {"throughput_kbps": r.bulk_throughput_kbps},
+            "path": r.active_path,
         }
         for r in db_records
     ]

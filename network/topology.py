@@ -16,44 +16,201 @@ Topology Architecture:
                        [Bottleneck Path: 10 Mbps, 2ms, HTB]
 """
 
-import sys
-import json
 import argparse
-from typing import Dict, Any, List
+import json
+import sys
+from typing import Any, Dict
 
 # Metadata representation of topology for frontend React Flow and backend graph
 TOPOLOGY_METADATA: Dict[str, Any] = {
     "switches": [
-        {"id": "s1", "label": "Switch 1 (Ingress)", "dpid": "0000000000000001", "x": 300, "y": 240, "role": "ingress"},
-        {"id": "s2", "label": "Switch 2 (Bottleneck)", "dpid": "0000000000000002", "x": 580, "y": 140, "role": "core_bottleneck"},
-        {"id": "s3", "label": "Switch 3 (Alternate)", "dpid": "0000000000000003", "x": 580, "y": 340, "role": "core_alternate"},
-        {"id": "s4", "label": "Switch 4 (Egress)", "dpid": "0000000000000004", "x": 860, "y": 240, "role": "egress"},
+        {
+            "id": "s1",
+            "label": "Switch 1 (Ingress)",
+            "dpid": "0000000000000001",
+            "x": 300,
+            "y": 240,
+            "role": "ingress",
+        },
+        {
+            "id": "s2",
+            "label": "Switch 2 (Bottleneck)",
+            "dpid": "0000000000000002",
+            "x": 580,
+            "y": 140,
+            "role": "core_bottleneck",
+        },
+        {
+            "id": "s3",
+            "label": "Switch 3 (Alternate)",
+            "dpid": "0000000000000003",
+            "x": 580,
+            "y": 340,
+            "role": "core_alternate",
+        },
+        {
+            "id": "s4",
+            "label": "Switch 4 (Egress)",
+            "dpid": "0000000000000004",
+            "x": 860,
+            "y": 240,
+            "role": "egress",
+        },
     ],
     "hosts": [
-        {"id": "h1", "label": "h1: VoIP Sender", "ip": "10.0.0.1", "mac": "00:00:00:00:00:01", "role": "voice", "x": 60, "y": 80},
-        {"id": "h2", "label": "h2: Video Sender", "ip": "10.0.0.2", "mac": "00:00:00:00:00:02", "role": "video", "x": 60, "y": 160},
-        {"id": "h3", "label": "h3: Bulk Sender 1", "ip": "10.0.0.3", "mac": "00:00:00:00:00:03", "role": "bulk", "x": 60, "y": 240},
-        {"id": "h4", "label": "h4: Bulk Sender 2", "ip": "10.0.0.4", "mac": "00:00:00:00:00:04", "role": "bulk", "x": 60, "y": 320},
-        {"id": "h5", "label": "h5: Rogue Flooder", "ip": "10.0.0.5", "mac": "00:00:00:00:00:05", "role": "flooder", "x": 60, "y": 400},
-        {"id": "h6", "label": "h6: Media Sink", "ip": "10.0.0.6", "mac": "00:00:00:00:00:06", "role": "receiver", "x": 1080, "y": 240},
+        {
+            "id": "h1",
+            "label": "h1: VoIP Sender",
+            "ip": "10.0.0.1",
+            "mac": "00:00:00:00:00:01",
+            "role": "voice",
+            "x": 60,
+            "y": 80,
+        },
+        {
+            "id": "h2",
+            "label": "h2: Video Sender",
+            "ip": "10.0.0.2",
+            "mac": "00:00:00:00:00:02",
+            "role": "video",
+            "x": 60,
+            "y": 160,
+        },
+        {
+            "id": "h3",
+            "label": "h3: Bulk Sender 1",
+            "ip": "10.0.0.3",
+            "mac": "00:00:00:00:00:03",
+            "role": "bulk",
+            "x": 60,
+            "y": 240,
+        },
+        {
+            "id": "h4",
+            "label": "h4: Bulk Sender 2",
+            "ip": "10.0.0.4",
+            "mac": "00:00:00:00:00:04",
+            "role": "bulk",
+            "x": 60,
+            "y": 320,
+        },
+        {
+            "id": "h5",
+            "label": "h5: Rogue Flooder",
+            "ip": "10.0.0.5",
+            "mac": "00:00:00:00:00:05",
+            "role": "flooder",
+            "x": 60,
+            "y": 400,
+        },
+        {
+            "id": "h6",
+            "label": "h6: Media Sink",
+            "ip": "10.0.0.6",
+            "mac": "00:00:00:00:00:06",
+            "role": "receiver",
+            "x": 1080,
+            "y": 240,
+        },
     ],
     "links": [
         # Host to Ingress Switch (100 Mbps, 1ms)
-        {"source": "h1", "target": "s1", "src_port": 1, "dst_port": 1, "bw_mbps": 100, "delay_ms": 1.0, "is_bottleneck": False},
-        {"source": "h2", "target": "s1", "src_port": 1, "dst_port": 2, "bw_mbps": 100, "delay_ms": 1.0, "is_bottleneck": False},
-        {"source": "h3", "target": "s1", "src_port": 1, "dst_port": 3, "bw_mbps": 100, "delay_ms": 1.0, "is_bottleneck": False},
-        {"source": "h4", "target": "s1", "src_port": 1, "dst_port": 4, "bw_mbps": 100, "delay_ms": 1.0, "is_bottleneck": False},
-        {"source": "h5", "target": "s1", "src_port": 1, "dst_port": 5, "bw_mbps": 100, "delay_ms": 1.0, "is_bottleneck": False},
+        {
+            "source": "h1",
+            "target": "s1",
+            "src_port": 1,
+            "dst_port": 1,
+            "bw_mbps": 100,
+            "delay_ms": 1.0,
+            "is_bottleneck": False,
+        },
+        {
+            "source": "h2",
+            "target": "s1",
+            "src_port": 1,
+            "dst_port": 2,
+            "bw_mbps": 100,
+            "delay_ms": 1.0,
+            "is_bottleneck": False,
+        },
+        {
+            "source": "h3",
+            "target": "s1",
+            "src_port": 1,
+            "dst_port": 3,
+            "bw_mbps": 100,
+            "delay_ms": 1.0,
+            "is_bottleneck": False,
+        },
+        {
+            "source": "h4",
+            "target": "s1",
+            "src_port": 1,
+            "dst_port": 4,
+            "bw_mbps": 100,
+            "delay_ms": 1.0,
+            "is_bottleneck": False,
+        },
+        {
+            "source": "h5",
+            "target": "s1",
+            "src_port": 1,
+            "dst_port": 5,
+            "bw_mbps": 100,
+            "delay_ms": 1.0,
+            "is_bottleneck": False,
+        },
         # Primary Bottleneck Link: s1-eth6 <-> s2-eth1 (10 Mbps, 2ms, HTB Queues)
-        {"source": "s1", "target": "s2", "src_port": 6, "dst_port": 1, "bw_mbps": 10, "delay_ms": 2.0, "is_bottleneck": True, "bottleneck_port": "s1-eth6"},
+        {
+            "source": "s1",
+            "target": "s2",
+            "src_port": 6,
+            "dst_port": 1,
+            "bw_mbps": 10,
+            "delay_ms": 2.0,
+            "is_bottleneck": True,
+            "bottleneck_port": "s1-eth6",
+        },
         # Alternate Path: s1-eth7 <-> s3-eth1 (20 Mbps, 15ms higher latency)
-        {"source": "s1", "target": "s3", "src_port": 7, "dst_port": 1, "bw_mbps": 20, "delay_ms": 15.0, "is_bottleneck": False},
+        {
+            "source": "s1",
+            "target": "s3",
+            "src_port": 7,
+            "dst_port": 1,
+            "bw_mbps": 20,
+            "delay_ms": 15.0,
+            "is_bottleneck": False,
+        },
         # Core to Egress Links: s2-eth2 <-> s4-eth1, s3-eth2 <-> s4-eth2 (100 Mbps, 1ms)
-        {"source": "s2", "target": "s4", "src_port": 2, "dst_port": 1, "bw_mbps": 100, "delay_ms": 1.0, "is_bottleneck": False},
-        {"source": "s3", "target": "s4", "src_port": 2, "dst_port": 2, "bw_mbps": 100, "delay_ms": 1.0, "is_bottleneck": False},
+        {
+            "source": "s2",
+            "target": "s4",
+            "src_port": 2,
+            "dst_port": 1,
+            "bw_mbps": 100,
+            "delay_ms": 1.0,
+            "is_bottleneck": False,
+        },
+        {
+            "source": "s3",
+            "target": "s4",
+            "src_port": 2,
+            "dst_port": 2,
+            "bw_mbps": 100,
+            "delay_ms": 1.0,
+            "is_bottleneck": False,
+        },
         # Egress Switch to Receiver: s4-eth3 <-> h6-eth1 (100 Mbps, 1ms)
-        {"source": "s4", "target": "h6", "src_port": 3, "dst_port": 1, "bw_mbps": 100, "delay_ms": 1.0, "is_bottleneck": False},
-    ]
+        {
+            "source": "s4",
+            "target": "h6",
+            "src_port": 3,
+            "dst_port": 1,
+            "bw_mbps": 100,
+            "delay_ms": 1.0,
+            "is_bottleneck": False,
+        },
+    ],
 }
 
 
@@ -63,12 +220,13 @@ def get_topology_dict() -> Dict[str, Any]:
 
 
 try:
-    from mininet.topo import Topo
-    from mininet.net import Mininet
-    from mininet.node import RemoteController, OVSSwitch
-    from mininet.link import TCLink
     from mininet.cli import CLI
-    from mininet.log import setLogLevel, info
+    from mininet.link import TCLink
+    from mininet.log import info, setLogLevel
+    from mininet.net import Mininet
+    from mininet.node import OVSSwitch, RemoteController
+    from mininet.topo import Topo
+
     HAS_MININET = True
 except ImportError:
     HAS_MININET = False
@@ -76,8 +234,10 @@ except ImportError:
 
 
 if HAS_MININET:
+
     class QoSBoostTopo(Topo):
         """Mininet custom topology class for QoSBoost."""
+
         def build(self):
             # Create 4 Open vSwitch instances (OF1.3)
             s1 = self.addSwitch("s1", dpid="0000000000000001", protocols="OpenFlow13")
@@ -114,7 +274,9 @@ if HAS_MININET:
             self.addLink(s4, h6, port1=3, port2=1, bw=100, delay="1ms")
 
 
-def run_mininet(controller_ip: str = "127.0.0.1", controller_port: int = 6653, interactive: bool = False):
+def run_mininet(
+    controller_ip: str = "127.0.0.1", controller_port: int = 6653, interactive: bool = False
+):
     """Launches the Mininet network and connects to remote Ryu OpenFlow 1.3 controller."""
     if not HAS_MININET:
         print("ERROR: Mininet is not installed in the current environment.")
@@ -126,22 +288,18 @@ def run_mininet(controller_ip: str = "127.0.0.1", controller_port: int = 6653, i
     setLogLevel("info")
     info("*** Building QoSBoost SDN Topology...\n")
     topo = QoSBoostTopo()
-    
-    controller = RemoteController(
-        name="ryu_c0",
-        ip=controller_ip,
-        port=controller_port
-    )
-    
+
+    controller = RemoteController(name="ryu_c0", ip=controller_ip, port=controller_port)
+
     net = Mininet(
         topo=topo,
         switch=OVSSwitch,
         controller=controller,
         link=TCLink,
         autoSetMacs=True,
-        autoStaticArp=True
+        autoStaticArp=True,
     )
-    
+
     info("*** Starting Network...\n")
     net.start()
 
@@ -161,9 +319,15 @@ def run_mininet(controller_ip: str = "127.0.0.1", controller_port: int = 6653, i
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="QoSBoost Mininet Topology Runner")
     parser.add_argument("--json", action="store_true", help="Print topology metadata JSON and exit")
-    parser.add_argument("--controller-ip", default="127.0.0.1", help="Ryu controller IP (default: 127.0.0.1)")
-    parser.add_argument("--controller-port", type=int, default=6653, help="Ryu OpenFlow port (default: 6653)")
-    parser.add_argument("--cli", action="store_true", help="Start interactive Mininet CLI after launch")
+    parser.add_argument(
+        "--controller-ip", default="127.0.0.1", help="Ryu controller IP (default: 127.0.0.1)"
+    )
+    parser.add_argument(
+        "--controller-port", type=int, default=6653, help="Ryu OpenFlow port (default: 6653)"
+    )
+    parser.add_argument(
+        "--cli", action="store_true", help="Start interactive Mininet CLI after launch"
+    )
     args = parser.parse_args()
 
     if args.json:
@@ -172,5 +336,5 @@ if __name__ == "__main__":
         run_mininet(
             controller_ip=args.controller_ip,
             controller_port=args.controller_port,
-            interactive=args.cli
+            interactive=args.cli,
         )

@@ -13,10 +13,11 @@ Classification features:
 - Extensible ML classifier hook (Random Forest) for encrypted/unknown traffic
 """
 
-import os
-import yaml
 import logging
-from typing import Dict, Any, Optional, Tuple, List
+import os
+from typing import Any, Dict, List, Optional
+
+import yaml
 
 logger = logging.getLogger("qosboost.controller.classifier")
 
@@ -25,6 +26,7 @@ DEFAULT_POLICY_PATH = os.path.join(os.path.dirname(__file__), "..", "config", "p
 
 class Flow5Tuple:
     """Represents an IP 5-tuple."""
+
     def __init__(self, proto: str, src_ip: str, src_port: int, dst_ip: str, dst_port: int):
         self.proto = proto.lower()
         self.src_ip = src_ip
@@ -51,6 +53,7 @@ class TrafficClassifier:
     1. Rule-based classifier (primary): inspects protocol, port, and DSCP against YAML rules.
     2. ML classifier (stretch): Random Forest prediction on statistical flow metrics.
     """
+
     def __init__(self, config_path: str = DEFAULT_POLICY_PATH):
         self.config_path = config_path
         self.rules: List[Dict[str, Any]] = []
@@ -62,7 +65,10 @@ class TrafficClassifier:
     def load_rules(self) -> bool:
         """Loads or hot-reloads classification rules from the YAML configuration."""
         if not os.path.exists(self.config_path):
-            logger.warning("Policy configuration file not found at %s. Using built-in defaults.", self.config_path)
+            logger.warning(
+                "Policy configuration file not found at %s. Using built-in defaults.",
+                self.config_path,
+            )
             self._load_fallback_rules()
             return False
 
@@ -70,7 +76,9 @@ class TrafficClassifier:
             with open(self.config_path, "r", encoding="utf-8") as f:
                 data = yaml.safe_load(f)
                 self.rules = data.get("rules", [])
-                logger.info("Loaded %d classification rules from %s", len(self.rules), self.config_path)
+                logger.info(
+                    "Loaded %d classification rules from %s", len(self.rules), self.config_path
+                )
                 # Clear flow cache on rule reload
                 self.flow_cache.clear()
                 return True
@@ -81,10 +89,25 @@ class TrafficClassifier:
 
     def _load_fallback_rules(self):
         self.rules = [
-            {"id": "voip-direct", "class_name": "voice", "protocol": "udp", "dst_ports": [5004, 5060, 5061]},
-            {"id": "video-direct", "class_name": "video", "protocol": "udp", "dst_ports": [5002, 554, 1935]},
+            {
+                "id": "voip-direct",
+                "class_name": "voice",
+                "protocol": "udp",
+                "dst_ports": [5004, 5060, 5061],
+            },
+            {
+                "id": "video-direct",
+                "class_name": "video",
+                "protocol": "udp",
+                "dst_ports": [5002, 554, 1935],
+            },
             {"id": "web-direct", "class_name": "web", "protocol": "tcp", "dst_ports": [80, 443]},
-            {"id": "bulk-direct", "class_name": "bulk", "protocol": "tcp", "dst_ports": [5201, 5202]},
+            {
+                "id": "bulk-direct",
+                "class_name": "bulk",
+                "protocol": "tcp",
+                "dst_ports": [5201, 5202],
+            },
         ]
 
     def set_ml_mode(self, enabled: bool):

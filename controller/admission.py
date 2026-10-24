@@ -8,9 +8,8 @@ Decisions:
 3. 'reject': Bottleneck fully saturated; rejected to prevent SLA degradation of existing active flows.
 """
 
-import time
 import logging
-from typing import Dict, Any, Tuple
+import time
 from dataclasses import dataclass
 
 logger = logging.getLogger("qosboost.controller.admission")
@@ -36,11 +35,7 @@ class AdmissionController:
         self.max_allocatable_kbps = bottleneck_capacity_kbps * (1.0 - safety_margin)
 
     def evaluate(
-        self,
-        flow_id: str,
-        class_name: str,
-        requested_kbps: float,
-        current_in_use_kbps: float
+        self, flow_id: str, class_name: str, requested_kbps: float, current_in_use_kbps: float
     ) -> AdmissionDecision:
         """Determines admission status for incoming flow."""
         available_kbps = max(0.0, self.max_allocatable_kbps - current_in_use_kbps)
@@ -89,7 +84,9 @@ class AdmissionController:
             decision=decision,
             granted_rate_kbps=granted,
             reason=reason,
-            timestamp=now
+            timestamp=now,
         )
-        logger.info("Admission Control [%s] flow %s: %s (%s)", class_name, flow_id, decision, reason)
+        logger.info(
+            "Admission Control [%s] flow %s: %s (%s)", class_name, flow_id, decision, reason
+        )
         return res

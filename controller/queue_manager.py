@@ -17,11 +17,10 @@ Provides:
 - Platform-aware fallback for non-Linux simulation
 """
 
-import os
-import shutil
 import logging
+import shutil
 import subprocess
-from typing import Dict, Any, Optional
+from typing import Any, Dict, Optional
 
 logger = logging.getLogger("qosboost.controller.queue_manager")
 
@@ -33,7 +32,7 @@ class QueueManager:
         self.bottleneck_port = bottleneck_port
         self.has_ovs_vsctl = shutil.which("ovs-vsctl") is not None
         # In-memory shadow state for rates (in kbps)
-        self.active_queues: Dict[int, Dict[str, int]] = {
+        self.active_queues: Dict[int, Dict[str, Any]] = {
             0: {"class": "web", "min_rate_kbps": 1000, "max_rate_kbps": 4000},
             1: {"class": "voice", "min_rate_kbps": 200, "max_rate_kbps": 500},
             2: {"class": "video", "min_rate_kbps": 2500, "max_rate_kbps": 4500},
@@ -49,7 +48,9 @@ class QueueManager:
         logger.info("Configuring HTB QoS queues on port '%s'...", port)
 
         if not self.has_ovs_vsctl:
-            logger.info("ovs-vsctl not available (Simulated mode). Applying shadow queue configurations.")
+            logger.info(
+                "ovs-vsctl not available (Simulated mode). Applying shadow queue configurations."
+            )
             return True
 
         # Clear existing QoS on port
@@ -64,21 +65,42 @@ class QueueManager:
             #   -- --id=@q2 create queue other-config:min-rate=2500000 other-config:max-rate=4500000 \
             #   -- --id=@q3 create queue other-config:min-rate=500000 other-config:max-rate=8000000
             cmd = [
-                "sudo", "ovs-vsctl", "--",
-                "set", "port", port, "qos=@newqos",
-                "--", "--id=@newqos", "create", "qos", "type=linux-htb",
+                "sudo",
+                "ovs-vsctl",
+                "--",
+                "set",
+                "port",
+                port,
+                "qos=@newqos",
+                "--",
+                "--id=@newqos",
+                "create",
+                "qos",
+                "type=linux-htb",
                 "other-config:max-rate=10000000",
                 "queues=0=@q0,1=@q1,2=@q2,3=@q3",
-                "--", "--id=@q0", "create", "queue",
+                "--",
+                "--id=@q0",
+                "create",
+                "queue",
                 f"other-config:min-rate={self.active_queues[0]['min_rate_kbps'] * 1000}",
                 f"other-config:max-rate={self.active_queues[0]['max_rate_kbps'] * 1000}",
-                "--", "--id=@q1", "create", "queue",
+                "--",
+                "--id=@q1",
+                "create",
+                "queue",
                 f"other-config:min-rate={self.active_queues[1]['min_rate_kbps'] * 1000}",
                 f"other-config:max-rate={self.active_queues[1]['max_rate_kbps'] * 1000}",
-                "--", "--id=@q2", "create", "queue",
+                "--",
+                "--id=@q2",
+                "create",
+                "queue",
                 f"other-config:min-rate={self.active_queues[2]['min_rate_kbps'] * 1000}",
                 f"other-config:max-rate={self.active_queues[2]['max_rate_kbps'] * 1000}",
-                "--", "--id=@q3", "create", "queue",
+                "--",
+                "--id=@q3",
+                "create",
+                "queue",
                 f"other-config:min-rate={self.active_queues[3]['min_rate_kbps'] * 1000}",
                 f"other-config:max-rate={self.active_queues[3]['max_rate_kbps'] * 1000}",
             ]
@@ -86,10 +108,19 @@ class QueueManager:
             logger.info("Successfully established HTB queues on %s: %s", port, res.stdout.strip())
             return True
         except Exception as e:
-            logger.warning("Could not execute ovs-vsctl for queue setup: %s. Continuing in simulated queue mode.", e)
+            logger.warning(
+                "Could not execute ovs-vsctl for queue setup: %s. Continuing in simulated queue mode.",
+                e,
+            )
             return False
 
-    def update_queue_rate(self, queue_id: int, min_rate_kbps: Optional[int] = None, max_rate_kbps: Optional[int] = None, port_name: Optional[str] = None) -> bool:
+    def update_queue_rate(
+        self,
+        queue_id: int,
+        min_rate_kbps: Optional[int] = None,
+        max_rate_kbps: Optional[int] = None,
+        port_name: Optional[str] = None,
+    ) -> bool:
         """
         Dynamically adjusts bandwidth limits on a specific queue.
         Used by the Dynamic Bandwidth Allocation engine during congestion.
@@ -103,10 +134,13 @@ class QueueManager:
         if max_rate_kbps is not None:
             self.active_queues[queue_id]["max_rate_kbps"] = max_rate_kbps
 
-        logger.info("Adjusted Queue %d (%s) limits: min=%d kbps, max=%d kbps",
-                    queue_id, self.active_queues[queue_id]["class"],
-                    self.active_queues[queue_id]["min_rate_kbps"],
-                    self.active_queues[queue_id]["max_rate_kbps"])
+        logger.info(
+            "Adjusted Queue %d (%s) limits: min=%d kbps, max=%d kbps",
+            queue_id,
+            self.active_queues[queue_id]["class"],
+            self.active_queues[queue_id]["min_rate_kbps"],
+            self.active_queues[queue_id]["max_rate_kbps"],
+        )
 
         if not self.has_ovs_vsctl:
             return True
@@ -123,9 +157,17 @@ class QueueManager:
             return
 
         try:
-            subprocess.run(["sudo", "ovs-vsctl", "clear", "port", port, "qos"], capture_output=True, check=False)
-            subprocess.run(["sudo", "ovs-vsctl", "--all", "destroy", "qos"], capture_output=True, check=False)
-            subprocess.run(["sudo", "ovs-vsctl", "--all", "destroy", "queue"], capture_output=True, check=False)
+            subprocess.run(
+                ["sudo", "ovs-vsctl", "clear", "port", port, "qos"],
+                capture_output=True,
+                check=False,
+            )
+            subprocess.run(
+                ["sudo", "ovs-vsctl", "--all", "destroy", "qos"], capture_output=True, check=False
+            )
+            subprocess.run(
+                ["sudo", "ovs-vsctl", "--all", "destroy", "queue"], capture_output=True, check=False
+            )
             logger.info("Cleared QoS records on %s", port)
         except Exception as e:
             logger.debug("destroy_queues: %s", e)

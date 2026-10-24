@@ -3,20 +3,21 @@ QoSBoost FastAPI Backend Application.
 The unified API and real-time streaming surface for the QoSBoost Dashboard.
 """
 
-from contextlib import asynccontextmanager
 import logging
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 
+from backend.api.routes_events import router as events_router
+from backend.api.routes_flows import router as flows_router
+from backend.api.routes_policies import router as policies_router
+from backend.api.routes_scenarios import router as scenarios_router
+from backend.api.routes_telemetry import router as telemetry_router
+from backend.api.routes_topology import router as topology_router
 from backend.database import init_db
 from backend.services.telemetry_service import telemetry_service
 from backend.ws.broadcaster import manager
-from backend.api.routes_telemetry import router as telemetry_router
-from backend.api.routes_flows import router as flows_router
-from backend.api.routes_policies import router as policies_router
-from backend.api.routes_events import router as events_router
-from backend.api.routes_scenarios import router as scenarios_router
-from backend.api.routes_topology import router as topology_router
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
 logger = logging.getLogger("qosboost.backend")
@@ -39,7 +40,7 @@ app = FastAPI(
     title="QoSBoost API",
     description="SDN-Based QoS Management Backend API and Telemetry Broadcaster",
     version="1.0.0",
-    lifespan=lifespan
+    lifespan=lifespan,
 )
 
 # Enable CORS for React frontend
@@ -66,7 +67,7 @@ def root():
         "system": "QoSBoost SDN QoS Management",
         "status": "online",
         "docs_url": "/docs",
-        "websocket_url": "/ws/telemetry"
+        "websocket_url": "/ws/telemetry",
     }
 
 
@@ -89,4 +90,5 @@ async def websocket_telemetry(websocket: WebSocket):
 
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run("backend.main:app", host="0.0.0.0", port=8000, reload=True)

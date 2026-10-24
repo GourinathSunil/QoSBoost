@@ -11,14 +11,14 @@ Provides:
    for the 60-90s demo scenario both on live Mininet and in standalone mode.
 """
 
-import time
+import logging
+import random
 import socket
 import struct
 import threading
-import random
-import logging
-from typing import Dict, Any, Optional, List, Callable
+import time
 from dataclasses import dataclass, field
+from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger("qosboost.network.traffic")
 
@@ -46,6 +46,7 @@ class StreamStats:
 
 class TelemetryCollector:
     """UDP measurement sink for VoIP and Video streams."""
+
     def __init__(self, bind_ip: str = "0.0.0.0", port: int = 5004, class_name: str = "voice"):
         self.bind_ip = bind_ip
         self.port = port
@@ -64,9 +65,16 @@ class TelemetryCollector:
             self._sock.settimeout(0.5)
             self._thread = threading.Thread(target=self._listen_loop, daemon=True)
             self._thread.start()
-            logger.info("Collector started for class %s on %s:%d", self.class_name, self.bind_ip, self.port)
+            logger.info(
+                "Collector started for class %s on %s:%d", self.class_name, self.bind_ip, self.port
+            )
         except Exception as e:
-            logger.warning("Could not bind socket on %s:%d (%s). Falling back to simulated collector.", self.bind_ip, self.port, e)
+            logger.warning(
+                "Could not bind socket on %s:%d (%s). Falling back to simulated collector.",
+                self.bind_ip,
+                self.port,
+                e,
+            )
 
     def _listen_loop(self):
         while self.running and self._sock:
@@ -74,7 +82,9 @@ class TelemetryCollector:
                 data, addr = self._sock.recvfrom(2048)
                 recv_time_ns = time.time_ns()
                 if len(data) >= RTP_HEADER_SIZE:
-                    magic, seq, send_time_ns, class_id = struct.unpack_from(RTP_HEADER_FORMAT, data, 0)
+                    magic, seq, send_time_ns, class_id = struct.unpack_from(
+                        RTP_HEADER_FORMAT, data, 0
+                    )
                     if magic == MAGIC_HEADER:
                         self._process_packet(seq, send_time_ns, recv_time_ns, len(data))
             except socket.timeout:
@@ -87,7 +97,7 @@ class TelemetryCollector:
     def _process_packet(self, seq: int, send_time_ns: int, recv_time_ns: int, size_bytes: int):
         self.stats.packets_received += 1
         self.stats.bytes_received += size_bytes
-        
+
         # Latency calculation (ms)
         transit_ms = max(0.1, (recv_time_ns - send_time_ns) / 1_000_000.0)
         self.stats.current_latency_ms = transit_ms
@@ -96,8 +106,8 @@ class TelemetryCollector:
         if self.stats.last_seq >= 0:
             expected = self.stats.last_seq + 1
             if seq > expected:
-                self.stats.lost_packets += (seq - expected)
-            
+                self.stats.lost_packets += seq - expected
+
             # RFC 3550 Interarrival Jitter calculation:
             # D(i, j) = (R_j - S_j) - (R_i - S_i)
             # J = J + (|D| - J) / 16
@@ -120,6 +130,7 @@ class TelemetryCollector:
 
 class VoIPTrafficGenerator:
     """Generates 20ms G.711 RTP voice streams (~100 kbps, 160-byte payload + header)."""
+
     def __init__(self, target_ip: str = "10.0.0.6", target_port: int = 5004, dscp: int = 46):
         self.target_ip = target_ip
         self.target_port = target_port
@@ -163,6 +174,7 @@ class VoIPTrafficGenerator:
 
 class VideoTrafficGenerator:
     """Generates 3 Mbps CBR video stream (1316-byte MPEG-TS packets)."""
+
     def __init__(self, target_ip: str = "10.0.0.6", target_port: int = 5002, dscp: int = 34):
         self.target_ip = target_ip
         self.target_port = target_port
@@ -185,7 +197,7 @@ class VideoTrafficGenerator:
 
         # 3 Mbps = ~375 kB/s ≈ 285 packets/sec of 1316 bytes
         # Send packets with ~3.5ms delay
-        payload = b"\xAA" * (1316 - RTP_HEADER_SIZE)
+        payload = b"\xaa" * (1316 - RTP_HEADER_SIZE)
         while self.running:
             send_ns = time.time_ns()
             header = struct.pack(RTP_HEADER_FORMAT, MAGIC_HEADER, seq, send_ns, 2)
@@ -222,6 +234,7 @@ class SimulatedScenarioEngine:
       bulk is throttled; flooder is rate-limited by OF1.3 meter; voice latency stays <15ms,
       jitter stays <4ms, loss is 0.0%!
     """
+
     def __init__(self, qos_enabled: bool = True):
         self.qos_enabled = qos_enabled
         self.start_time = 0.0
@@ -261,14 +274,16 @@ class SimulatedScenarioEngine:
             phase_desc = "Congestion: Saturating TCP bulk transfers active"
         elif t < 60.0:
             bulk_demand_kbps = 9500.0 + random.uniform(-300.0, 300.0)  # 3 bulk hosts
-            flood_demand_kbps = 3500.0 + random.uniform(-100.0, 100.0) # Rogue UDP flooder
+            flood_demand_kbps = 3500.0 + random.uniform(-100.0, 100.0)  # Rogue UDP flooder
             phase_desc = "Severe Overload: 3 bulk hosts + rogue UDP flooder active"
         else:
             bulk_demand_kbps = 0.0
             flood_demand_kbps = 0.0
             phase_desc = "Recovery: Bulk flows terminated; returning to normal"
 
-        total_demand_kbps = voice_demand_kbps + video_demand_kbps + bulk_demand_kbps + flood_demand_kbps
+        total_demand_kbps = (
+            voice_demand_kbps + video_demand_kbps + bulk_demand_kbps + flood_demand_kbps
+        )
         bottleneck_capacity_kbps = 10000.0  # 10 Mbps
 
         # 2. Compute QoS allocation vs FIFO behavior
@@ -276,7 +291,7 @@ class SimulatedScenarioEngine:
             # === QoS DISABLED (Drop-tail FIFO queue) ===
             utilization = min(1.0, total_demand_kbps / bottleneck_capacity_kbps)
             congested = total_demand_kbps > bottleneck_capacity_kbps
-            
+
             if not congested:
                 voice_latency = 8.5 + random.uniform(-0.5, 0.8)
                 voice_jitter = 1.2 + random.uniform(-0.3, 0.4)
@@ -285,22 +300,23 @@ class SimulatedScenarioEngine:
                 voice_throughput = voice_demand_kbps
                 bulk_throughput = bulk_demand_kbps
             else:
-                overload_factor = total_demand_kbps / bottleneck_capacity_kbps
+                _overload_factor = total_demand_kbps / bottleneck_capacity_kbps
                 # Severe queuing delay in standard buffer
                 queue_buffer_delay = (total_demand_kbps - bottleneck_capacity_kbps) * 0.025
                 voice_latency = min(280.0, 8.5 + queue_buffer_delay + random.uniform(5.0, 20.0))
-                voice_jitter = min(75.0, 2.0 + queue_buffer_delay * 0.35 + random.uniform(3.0, 12.0))
+                voice_jitter = min(
+                    75.0, 2.0 + queue_buffer_delay * 0.35 + random.uniform(3.0, 12.0)
+                )
                 # Shared packet drop
                 drop_ratio = (total_demand_kbps - bottleneck_capacity_kbps) / total_demand_kbps
                 voice_loss = min(28.0, drop_ratio * 100.0 * 0.95 + random.uniform(-1.0, 2.0))
-                
+
                 # Fair share drops
                 voice_throughput = voice_demand_kbps * (1.0 - voice_loss / 100.0)
                 video_throughput = video_demand_kbps * (1.0 - voice_loss / 100.0)
                 bulk_throughput = bulk_demand_kbps * (1.0 - voice_loss / 100.0)
 
             routed_path = "Primary (s1 -> s2 -> s4)"
-            active_events = []
             rerouted = False
             meter_hits = 0
 
@@ -314,28 +330,34 @@ class SimulatedScenarioEngine:
             if t >= 15.0 and t < 60.0:
                 self.dynamic_bulk_limit_kbps = 4800.0 if t < 40.0 else 3200.0
                 if len(self.events) == 0 and t >= 16.0:
-                    self.events.append({
-                        "timestamp": round(t, 1),
-                        "type": "ADAPTATION",
-                        "message": "Dynamic Allocation: Link utilization > 80%. Bulk queue clamped from 8000k -> 4800k.",
-                        "reason": "High-watermark threshold exceeded"
-                    })
+                    self.events.append(
+                        {
+                            "timestamp": round(t, 1),
+                            "type": "ADAPTATION",
+                            "message": "Dynamic Allocation: Link utilization > 80%. Bulk queue clamped from 8000k -> 4800k.",
+                            "reason": "High-watermark threshold exceeded",
+                        }
+                    )
                 if len(self.events) == 1 and t >= 41.0:
-                    self.events.append({
-                        "timestamp": round(t, 1),
-                        "type": "METER_DROP",
-                        "message": "OpenFlow Meter #1 triggered: Rogue UDP flooder on h5 dropped 2500 kbps.",
-                        "reason": "Exceeded 1000 kbps meter band"
-                    })
-                    self.events.append({
-                        "timestamp": round(t, 1),
-                        "type": "REROUTE",
-                        "message": "QoS Routing: Video stream h2 rerouted via Alternate Path (s1 -> s3 -> s4).",
-                        "reason": "Residual bottleneck bandwidth < video reservation"
-                    })
+                    self.events.append(
+                        {
+                            "timestamp": round(t, 1),
+                            "type": "METER_DROP",
+                            "message": "OpenFlow Meter #1 triggered: Rogue UDP flooder on h5 dropped 2500 kbps.",
+                            "reason": "Exceeded 1000 kbps meter band",
+                        }
+                    )
+                    self.events.append(
+                        {
+                            "timestamp": round(t, 1),
+                            "type": "REROUTE",
+                            "message": "QoS Routing: Video stream h2 rerouted via Alternate Path (s1 -> s3 -> s4).",
+                            "reason": "Residual bottleneck bandwidth < video reservation",
+                        }
+                    )
 
             # Check if video is rerouted via alternate path (s3)
-            rerouted = (t >= 40.0 and t < 60.0)
+            rerouted = t >= 40.0 and t < 60.0
             routed_path = "Alternate (s1 -> s3 -> s4)" if rerouted else "Primary (s1 -> s2 -> s4)"
 
             # Queue 1 (Voice) is strictly isolated with strict priority (Queue 1)
@@ -348,10 +370,21 @@ class SimulatedScenarioEngine:
             video_throughput = video_demand_kbps
 
             # Bulk throughput throttled to remaining bottleneck capacity
-            remaining_cap = max(200.0, bottleneck_capacity_kbps - voice_throughput - (0.0 if rerouted else video_throughput) - effective_flood_kbps)
+            remaining_cap = max(
+                200.0,
+                bottleneck_capacity_kbps
+                - voice_throughput
+                - (0.0 if rerouted else video_throughput)
+                - effective_flood_kbps,
+            )
             bulk_throughput = min(self.dynamic_bulk_limit_kbps, remaining_cap)
 
-            total_served = voice_throughput + (0.0 if rerouted else video_throughput) + bulk_throughput + effective_flood_kbps
+            total_served = (
+                voice_throughput
+                + (0.0 if rerouted else video_throughput)
+                + bulk_throughput
+                + effective_flood_kbps
+            )
             utilization = min(0.92, total_served / bottleneck_capacity_kbps)
 
         return {
@@ -363,21 +396,107 @@ class SimulatedScenarioEngine:
                 "latency_ms": round(voice_latency, 2),
                 "jitter_ms": round(voice_jitter, 2),
                 "loss_percent": round(voice_loss, 2),
-                "throughput_kbps": round(voice_throughput, 1)
+                "throughput_kbps": round(voice_throughput, 1),
             },
             "video": {
                 "latency_ms": round(voice_latency * 1.5, 2),
                 "throughput_kbps": round(video_throughput, 1),
-                "loss_percent": round(voice_loss * 0.8, 2)
+                "loss_percent": round(voice_loss * 0.8, 2),
             },
-            "bulk": {
-                "throughput_kbps": round(bulk_throughput, 1)
-            },
+            "bulk": {"throughput_kbps": round(bulk_throughput, 1)},
             "flooder": {
-                "throughput_kbps": round(flood_demand_kbps if not self.qos_enabled else min(1000.0, flood_demand_kbps), 1),
-                "meter_drops": meter_hits if self.qos_enabled else 0
+                "throughput_kbps": round(
+                    flood_demand_kbps if not self.qos_enabled else min(1000.0, flood_demand_kbps), 1
+                ),
+                "meter_drops": meter_hits if self.qos_enabled else 0,
             },
             "path": routed_path,
             "rerouted": rerouted if self.qos_enabled else False,
-            "events": list(self.events)
+            "events": list(self.events),
         }
+
+
+def parse_iperf3_json_report(json_data: Any) -> Dict[str, Any]:
+    """
+    Parses output from `iperf3 --json` (TCP or UDP) extracting latency, jitter, loss, and bitrate.
+    """
+    import json
+
+    if isinstance(json_data, str):
+        try:
+            json_data = json.loads(json_data)
+        except Exception as e:
+            return {"error": f"Invalid JSON report: {e}"}
+
+    end_summary = json_data.get("end", {})
+    sum_sent = end_summary.get("sum_sent", {})
+    sum_received = end_summary.get("sum_received", {})
+
+    # UDP reports contain jitter_ms and lost_percent in sum
+    sum_udp = end_summary.get("sum", {})
+    jitter_ms = sum_udp.get("jitter_ms", 0.0)
+    lost_packets = sum_udp.get("lost_packets", 0)
+    packets = sum_udp.get("packets", 0)
+    lost_percent = sum_udp.get("lost_percent", 0.0)
+    bits_per_second = sum_received.get("bits_per_second", sum_sent.get("bits_per_second", 0.0))
+
+    return {
+        "throughput_kbps": round(bits_per_second / 1000.0, 2),
+        "jitter_ms": round(jitter_ms, 3),
+        "lost_packets": lost_packets,
+        "total_packets": packets,
+        "loss_percent": round(lost_percent, 2),
+        "retransmits": sum_sent.get("retransmits", 0),
+    }
+
+
+def measure_ping_rtt(target_ip: str, count: int = 4, timeout_sec: int = 2) -> Dict[str, Any]:
+    """
+    Executes ping against target_ip and parses RTT (min/avg/max/stddev) and packet loss.
+    """
+    import platform
+    import re
+    import subprocess
+
+    is_win = platform.system().lower() == "windows"
+    cmd = [
+        "ping",
+        "-n" if is_win else "-c",
+        str(count),
+        "-w" if is_win else "-W",
+        str(timeout_sec * 1000 if is_win else timeout_sec),
+        target_ip,
+    ]
+
+    try:
+        proc = subprocess.run(cmd, capture_output=True, text=True, check=False)
+        output = proc.stdout
+
+        loss_match = re.search(r"(\d+)%\s+loss", output)
+        loss_pct = float(loss_match.group(1)) if loss_match else 0.0
+
+        if is_win:
+            # Average = Xms, Minimum = Yms, Maximum = Zms
+            avg_match = re.search(r"Average\s*=\s*(\d+)ms", output)
+            avg_rtt = float(avg_match.group(1)) if avg_match else 0.0
+            return {
+                "target_ip": target_ip,
+                "avg_rtt_ms": avg_rtt,
+                "loss_percent": loss_pct,
+                "raw_output": output.strip(),
+            }
+        else:
+            # rtt min/avg/max/mdev = 0.045/0.060/0.082/0.015 ms
+            rtt_match = re.search(r"=\s*([\d\.]+)/([\d\.]+)/([\d\.]+)/([\d\.]+)\s+ms", output)
+            if rtt_match:
+                return {
+                    "target_ip": target_ip,
+                    "min_rtt_ms": float(rtt_match.group(1)),
+                    "avg_rtt_ms": float(rtt_match.group(2)),
+                    "max_rtt_ms": float(rtt_match.group(3)),
+                    "mdev_ms": float(rtt_match.group(4)),
+                    "loss_percent": loss_pct,
+                }
+            return {"target_ip": target_ip, "avg_rtt_ms": 0.0, "loss_percent": loss_pct}
+    except Exception as e:
+        return {"target_ip": target_ip, "error": str(e), "loss_percent": 100.0}

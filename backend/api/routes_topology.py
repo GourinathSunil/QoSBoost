@@ -2,8 +2,10 @@
 REST route for Network Topology graph metadata.
 """
 
+from typing import Any, Dict
+
 from fastapi import APIRouter
-from typing import Dict, Any
+
 from network.topology import get_topology_dict
 
 router = APIRouter(prefix="/api/topology", tags=["topology"])

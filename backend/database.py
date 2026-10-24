@@ -4,9 +4,11 @@ Uses SQLModel / SQLAlchemy for light-weight, file-based persistence of telemetry
 """
 
 import os
-from sqlmodel import SQLModel, create_engine, Session, select
-from typing import List, Optional
-from backend.models.schemas import MetricSnapshotDB, EventRecordDB
+from typing import List
+
+from sqlmodel import Session, SQLModel, col, create_engine, select
+
+from backend.models.schemas import EventRecordDB, MetricSnapshotDB
 
 DB_FILE = os.path.join(os.path.dirname(__file__), "..", "qosboost.db")
 sqlite_url = f"sqlite:///{os.path.abspath(DB_FILE)}"
@@ -42,7 +44,9 @@ def save_event(event: EventRecordDB):
 def get_recent_snapshots(limit: int = 60) -> List[MetricSnapshotDB]:
     """Queries the most recent telemetry snapshots ordered by timestamp ascending."""
     with Session(engine) as session:
-        statement = select(MetricSnapshotDB).order_by(MetricSnapshotDB.timestamp.desc()).limit(limit)
+        statement = (
+            select(MetricSnapshotDB).order_by(col(MetricSnapshotDB.timestamp).desc()).limit(limit)
+        )
         results = session.exec(statement).all()
         return list(reversed(results))
 
@@ -50,5 +54,5 @@ def get_recent_snapshots(limit: int = 60) -> List[MetricSnapshotDB]:
 def get_all_events(limit: int = 100) -> List[EventRecordDB]:
     """Queries recent audit events ordered by timestamp descending."""
     with Session(engine) as session:
-        statement = select(EventRecordDB).order_by(EventRecordDB.timestamp.desc()).limit(limit)
+        statement = select(EventRecordDB).order_by(col(EventRecordDB.timestamp).desc()).limit(limit)
         return list(session.exec(statement).all())

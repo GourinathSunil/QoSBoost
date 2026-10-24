@@ -12,9 +12,10 @@ QoSBoost Policy Engine: Dynamic Bandwidth Allocation and OpenFlow 1.3 Meters.
    - Tracks meter hit counters and dropped/remarked bytes.
 """
 
-import time
 import logging
-from typing import Dict, Any, Optional, List, Callable
+import time
+from typing import Any, Callable, Dict, List, Optional
+
 from controller.queue_manager import QueueManager
 
 logger = logging.getLogger("qosboost.controller.policy_engine")
@@ -29,7 +30,7 @@ class DynamicBandwidthAllocator:
         high_watermark: float = 0.80,
         low_watermark: float = 0.60,
         cooldown_seconds: float = 4.0,
-        event_callback: Optional[Callable[[Dict[str, Any]], None]] = None
+        event_callback: Optional[Callable[[Dict[str, Any]], None]] = None,
     ):
         self.qm = queue_manager or QueueManager()
         self.high_watermark = high_watermark
@@ -48,14 +49,14 @@ class DynamicBandwidthAllocator:
         link_utilization: float,
         voice_latency_ms: float = 10.0,
         target_latency_ms: float = 30.0,
-        current_time: Optional[float] = None
+        current_time: Optional[float] = None,
     ) -> Optional[Dict[str, Any]]:
         """
         Evaluates current telemetric conditions and adjusts queue rates if thresholds are crossed.
         Returns the event dict if an adjustment occurred, otherwise None.
         """
         now = current_time if current_time is not None else time.time()
-        
+
         # Check cooldown to prevent rapid flapping
         if (now - self.last_adjustment_time) < self.cooldown_seconds:
             return None
@@ -77,7 +78,7 @@ class DynamicBandwidthAllocator:
                     "message": f"Link congestion ({int(link_utilization*100)}% util). Bulk queue clamped {before_val}k -> {new_rate}k.",
                     "reason": "High-watermark threshold / latency SLA violation",
                     "before_value": f"{before_val} kbps",
-                    "after_value": f"{new_rate} kbps"
+                    "after_value": f"{new_rate} kbps",
                 }
                 logger.info("Dynamic Allocation Triggered: %s", event["message"])
                 if self.event_callback:
@@ -101,7 +102,7 @@ class DynamicBandwidthAllocator:
                 "message": f"Link recovered ({int(link_utilization*100)}% util). Bulk queue restored {before_val}k -> {new_rate}k.",
                 "reason": "Low-watermark hysteresis release",
                 "before_value": f"{before_val} kbps",
-                "after_value": f"{new_rate} kbps"
+                "after_value": f"{new_rate} kbps",
             }
             logger.info("Dynamic Recovery Triggered: %s", event["message"])
             if self.event_callback:
@@ -125,7 +126,7 @@ class MeterManager:
                 "action": "drop",
                 "packet_in_count": 0,
                 "drop_packet_count": 0,
-                "drop_byte_count": 0
+                "drop_byte_count": 0,
             },
             2: {
                 "id": 2,
@@ -136,8 +137,8 @@ class MeterManager:
                 "remark_dscp": 8,
                 "packet_in_count": 0,
                 "drop_packet_count": 0,
-                "drop_byte_count": 0
-            }
+                "drop_byte_count": 0,
+            },
         }
 
     def record_hit(self, meter_id: int, excess_kbps: float) -> Optional[Dict[str, Any]]:
@@ -157,7 +158,7 @@ class MeterManager:
                 "message": f"OF1.3 Meter #{meter_id} ({m['name']}) enforced: rate limited {int(excess_kbps)} kbps.",
                 "reason": f"Traffic exceeded meter band ({m['rate_kbps']} kbps)",
                 "before_value": f"{m['rate_kbps']} kbps target",
-                "after_value": f"{m['action']} excess"
+                "after_value": f"{m['action']} excess",
             }
             return event
         return None

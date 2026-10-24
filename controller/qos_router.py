@@ -13,8 +13,9 @@ path (s1 -> s3 -> s4), while bulk transfers remain on the primary path.
 """
 
 import logging
+from typing import Any, Dict, List, Tuple
+
 import networkx as nx
-from typing import Dict, Any, List, Optional, Tuple
 
 logger = logging.getLogger("qosboost.controller.qos_router")
 
@@ -24,7 +25,7 @@ class QoSRouter:
 
     def __init__(self, alpha: float = 1.0, beta: float = 8.0):
         self.alpha = alpha  # Weight on propagation delay
-        self.beta = beta    # Weight on queuing congestion penalty
+        self.beta = beta  # Weight on queuing congestion penalty
         self.graph = nx.DiGraph()
         self._build_topology_graph()
 
@@ -37,11 +38,11 @@ class QoSRouter:
 
         # Links definition: (u, v, base_delay_ms, capacity_mbps)
         links = [
-            ("s1", "s2", 2.0, 10.0),    # Primary Bottleneck Path (10 Mbps, 2ms)
+            ("s1", "s2", 2.0, 10.0),  # Primary Bottleneck Path (10 Mbps, 2ms)
             ("s2", "s1", 2.0, 10.0),
-            ("s1", "s3", 15.0, 20.0),   # Alternate Path (20 Mbps, 15ms base delay)
+            ("s1", "s3", 15.0, 20.0),  # Alternate Path (20 Mbps, 15ms base delay)
             ("s3", "s1", 15.0, 20.0),
-            ("s2", "s4", 1.0, 100.0),   # Egress links (100 Mbps, 1ms)
+            ("s2", "s4", 1.0, 100.0),  # Egress links (100 Mbps, 1ms)
             ("s4", "s2", 1.0, 100.0),
             ("s3", "s4", 1.0, 100.0),
             ("s4", "s3", 1.0, 100.0),
@@ -49,11 +50,12 @@ class QoSRouter:
 
         for u, v, delay, bw in links:
             self.graph.add_edge(
-                u, v,
+                u,
+                v,
                 delay_ms=delay,
                 bw_mbps=bw,
                 utilization=0.0,
-                cost=delay  # Initial cost equals propagation delay
+                cost=delay,  # Initial cost equals propagation delay
             )
 
     def update_link_utilization(self, u: str, v: str, utilization_ratio: float):
@@ -71,10 +73,12 @@ class QoSRouter:
         cost = (self.alpha * delay) + congestion_penalty
         edge["cost"] = round(cost, 3)
 
-    def compute_path(self, src: str, dst: str, flow_class: str = "voice") -> Tuple[List[str], float, bool]:
+    def compute_path(
+        self, src: str, dst: str, flow_class: str = "voice"
+    ) -> Tuple[List[str], float, bool]:
         """
         Computes the optimal path for the given flow class.
-        
+
         Returns:
             (path, total_cost, is_rerouted)
             where is_rerouted indicates if the alternate path was chosen over primary.
@@ -82,14 +86,16 @@ class QoSRouter:
         # Bulk traffic always takes the default primary path
         if flow_class in ("bulk", "web"):
             default_path = ["s1", "s2", "s4"]
-            total_cost = sum(self.graph[u][v]["cost"] for u, v in zip(default_path[:-1], default_path[1:]))
+            total_cost = sum(
+                self.graph[u][v]["cost"] for u, v in zip(default_path[:-1], default_path[1:])
+            )
             return default_path, total_cost, False
 
         # Real-time traffic uses Dijkstra with dynamic link costs
         try:
             path = nx.shortest_path(self.graph, source=src, target=dst, weight="cost")
             total_cost = sum(self.graph[u][v]["cost"] for u, v in zip(path[:-1], path[1:]))
-            is_rerouted = ("s3" in path)
+            is_rerouted = "s3" in path
             return path, total_cost, is_rerouted
         except nx.NetworkXNoPath:
             # Fallback to default
@@ -100,12 +106,14 @@ class QoSRouter:
         res = []
         for u, v in self.graph.edges:
             data = self.graph[u][v]
-            res.append({
-                "source": u,
-                "target": v,
-                "delay_ms": data["delay_ms"],
-                "bw_mbps": data["bw_mbps"],
-                "utilization": round(data["utilization"] * 100, 1),
-                "cost": data["cost"]
-            })
+            res.append(
+                {
+                    "source": u,
+                    "target": v,
+                    "delay_ms": data["delay_ms"],
+                    "bw_mbps": data["bw_mbps"],
+                    "utilization": round(data["utilization"] * 100, 1),
+                    "cost": data["cost"],
+                }
+            )
         return res

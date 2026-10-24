@@ -1,4 +1,4 @@
-# QoSBoost Backend & Network Dependencies (Pinned Versions)
+# QoSBoost Pinned Dependencies (Section 2 Tech Stack)
 fastapi==0.115.8
 uvicorn[standard]==0.34.0
 pydantic==2.10.6
@@ -14,3 +14,6 @@ pytest-asyncio==0.25.3
 scikit-learn==1.6.1
 joblib==1.4.2
 numpy==2.2.3
+ruff==0.9.9
+black==25.1.0
+mypy==1.15.0

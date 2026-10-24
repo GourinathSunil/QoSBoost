@@ -18,8 +18,23 @@ help:
 	@echo "   make run-frontend   - Run React + Vite frontend on port 5173"
 	@echo "   make run-controller - Run Ryu SDN Controller on OpenFlow port 6653"
 	@echo "   make test           - Run all backend, classifier, and frontend unit tests"
+	@echo "   make lint           - Run ruff linter on Python modules"
+	@echo "   make format         - Check Python code formatting with black"
+	@echo "   make typecheck      - Run mypy type checker on backend and controller"
 	@echo "   make clean          - Teardown Mininet/OVS state, kill processes, clean caches"
 	@echo "======================================================================"
+
+lint:
+	@echo "Running ruff linter..."
+	@$(PYTHON) -m ruff check backend controller network tests
+
+format:
+	@echo "Checking black formatting..."
+	@$(PYTHON) -m black --check backend controller network tests
+
+typecheck:
+	@echo "Running mypy type checks..."
+	@$(PYTHON) -m mypy backend controller network
 
 check-prereqs:
 	@$(PYTHON) scripts/check_prereqs.py

@@ -2,10 +2,12 @@
 QoSBoost Data Models and Schemas (Pydantic v2 & SQLModel).
 """
 
-from typing import Optional, List, Dict, Any
 from datetime import datetime, timezone
-from sqlmodel import SQLModel, Field
-from pydantic import BaseModel, Field as PydanticField
+from typing import Any, Dict, List, Optional
+
+from pydantic import BaseModel
+from pydantic import Field as PydanticField
+from sqlmodel import Field, SQLModel
 
 
 def utc_now() -> datetime:
@@ -14,6 +16,7 @@ def utc_now() -> datetime:
 
 class MetricSnapshotDB(SQLModel, table=True):
     """Persisted periodic metric snapshot."""
+
     id: Optional[int] = Field(default=None, primary_key=True)
     timestamp: float = Field(index=True)
     created_at: datetime = Field(default_factory=utc_now)
@@ -30,6 +33,7 @@ class MetricSnapshotDB(SQLModel, table=True):
 
 class EventRecordDB(SQLModel, table=True):
     """Audit log entry for dynamic adjustments, meters, and admission decisions."""
+
     id: Optional[int] = Field(default=None, primary_key=True)
     timestamp: float = Field(index=True)
     created_at: datetime = Field(default_factory=utc_now)
@@ -42,6 +46,7 @@ class EventRecordDB(SQLModel, table=True):
 
 class FlowItem(BaseModel):
     """Active network flow descriptor."""
+
     id: str
     protocol: str
     src_ip: str
@@ -60,6 +65,7 @@ class FlowItem(BaseModel):
 
 class MetricSnapshot(BaseModel):
     """Real-time 1-second telemetry payload delivered via WebSocket and REST."""
+
     timestamp: float
     qos_enabled: bool
     phase: str

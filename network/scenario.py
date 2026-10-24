@@ -7,12 +7,11 @@ Executes reproducible before/after scenarios:
 - Computes percentage improvements and saves baseline comparison report.
 """
 
+import argparse
+import json
 import os
 import sys
-import json
-import time
-import argparse
-from typing import Dict, Any, List
+from typing import Any, Dict, List
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from network.traffic import SimulatedScenarioEngine
@@ -20,13 +19,15 @@ from network.traffic import SimulatedScenarioEngine
 DEFAULT_BASELINE_PATH = os.path.join(os.path.dirname(__file__), "scenarios", "baseline_no_qos.json")
 
 
-def run_scenario(qos_enabled: bool = False, duration_seconds: int = 60, step_interval: float = 1.0) -> Dict[str, Any]:
+def run_scenario(
+    qos_enabled: bool = False, duration_seconds: int = 60, step_interval: float = 1.0
+) -> Dict[str, Any]:
     """Runs a complete scripted scenario of specified duration and returns the time-series trajectory."""
     engine = SimulatedScenarioEngine(qos_enabled=qos_enabled)
     engine.start()
-    
+
     trajectory: List[Dict[str, Any]] = []
-    
+
     # We step through the duration
     for step in range(duration_seconds + 1):
         snapshot = engine.tick(elapsed=float(step))
@@ -35,12 +36,18 @@ def run_scenario(qos_enabled: bool = False, duration_seconds: int = 60, step_int
     # Compute summary statistics
     # Congestion period is from t=15 to t=60
     congestion_steps = [s for s in trajectory if 15.0 <= s["timestamp"] <= 60.0]
-    
-    avg_voice_lat = sum(s["voice"]["latency_ms"] for s in congestion_steps) / max(1, len(congestion_steps))
+
+    avg_voice_lat = sum(s["voice"]["latency_ms"] for s in congestion_steps) / max(
+        1, len(congestion_steps)
+    )
     max_voice_lat = max(s["voice"]["latency_ms"] for s in congestion_steps)
-    avg_voice_jit = sum(s["voice"]["jitter_ms"] for s in congestion_steps) / max(1, len(congestion_steps))
+    avg_voice_jit = sum(s["voice"]["jitter_ms"] for s in congestion_steps) / max(
+        1, len(congestion_steps)
+    )
     max_voice_loss = max(s["voice"]["loss_percent"] for s in congestion_steps)
-    avg_voice_loss = sum(s["voice"]["loss_percent"] for s in congestion_steps) / max(1, len(congestion_steps))
+    avg_voice_loss = sum(s["voice"]["loss_percent"] for s in congestion_steps) / max(
+        1, len(congestion_steps)
+    )
 
     summary = {
         "qos_enabled": qos_enabled,
@@ -53,10 +60,7 @@ def run_scenario(qos_enabled: bool = False, duration_seconds: int = 60, step_int
         "max_voice_loss_percent": round(max_voice_loss, 2),
     }
 
-    return {
-        "summary": summary,
-        "trajectory": trajectory
-    }
+    return {"summary": summary, "trajectory": trajectory}
 
 
 def save_baseline_run(output_file: str = DEFAULT_BASELINE_PATH) -> str:
@@ -70,9 +74,13 @@ def save_baseline_run(output_file: str = DEFAULT_BASELINE_PATH) -> str:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="QoSBoost Scenario Runner")
-    parser.add_argument("--baseline", action="store_true", help="Run and save baseline (QoS OFF) run")
+    parser.add_argument(
+        "--baseline", action="store_true", help="Run and save baseline (QoS OFF) run"
+    )
     parser.add_argument("--qos", action="store_true", help="Run scenario with QoS ON")
-    parser.add_argument("--output", default=DEFAULT_BASELINE_PATH, help="Output path for baseline JSON")
+    parser.add_argument(
+        "--output", default=DEFAULT_BASELINE_PATH, help="Output path for baseline JSON"
+    )
     args = parser.parse_args()
 
     if args.baseline or not args.qos:

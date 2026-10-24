@@ -2,14 +2,16 @@
 REST routes for Demo Evaluation and Automated Scenarios.
 """
 
-import os
 import json
+import os
 import time
+from typing import Any, Dict
+
 from fastapi import APIRouter
-from typing import Dict, Any, Optional
 from pydantic import BaseModel
+
 from backend.services.telemetry_service import telemetry_service
-from network.scenario import run_scenario, DEFAULT_BASELINE_PATH
+from network.scenario import DEFAULT_BASELINE_PATH, run_scenario
 
 router = APIRouter(prefix="/api/scenario", tags=["scenario"])
 
@@ -27,7 +29,7 @@ def start_demo_scenario(req: StartScenarioRequest) -> Dict[str, Any]:
         "status": "started",
         "qos_enabled": req.qos_enabled,
         "duration_seconds": req.duration_seconds,
-        "start_time": telemetry_service.scenario_start_time
+        "start_time": telemetry_service.scenario_start_time,
     }
 
 
@@ -44,7 +46,7 @@ def get_scenario_status() -> Dict[str, Any]:
     return {
         "running": running,
         "elapsed_seconds": round(elapsed, 1),
-        "qos_enabled": telemetry_service.qos_enabled
+        "qos_enabled": telemetry_service.qos_enabled,
     }
 
 
@@ -74,9 +76,18 @@ def get_comparison_report() -> Dict[str, Any]:
 
     # Compute percentage improvements
     # Latency improvement: (base - qos) / base * 100
-    lat_imp = ((base_summary["avg_voice_latency_ms"] - qos_summary["avg_voice_latency_ms"]) / base_summary["avg_voice_latency_ms"]) * 100.0
-    jit_imp = ((base_summary["avg_voice_jitter_ms"] - qos_summary["avg_voice_jitter_ms"]) / max(0.1, base_summary["avg_voice_jitter_ms"])) * 100.0
-    loss_imp = ((base_summary["avg_voice_loss_percent"] - qos_summary["avg_voice_loss_percent"]) / max(0.1, base_summary["avg_voice_loss_percent"])) * 100.0
+    lat_imp = (
+        (base_summary["avg_voice_latency_ms"] - qos_summary["avg_voice_latency_ms"])
+        / base_summary["avg_voice_latency_ms"]
+    ) * 100.0
+    jit_imp = (
+        (base_summary["avg_voice_jitter_ms"] - qos_summary["avg_voice_jitter_ms"])
+        / max(0.1, base_summary["avg_voice_jitter_ms"])
+    ) * 100.0
+    loss_imp = (
+        (base_summary["avg_voice_loss_percent"] - qos_summary["avg_voice_loss_percent"])
+        / max(0.1, base_summary["avg_voice_loss_percent"])
+    ) * 100.0
 
     return {
         "timestamp": time.time(),
@@ -85,8 +96,8 @@ def get_comparison_report() -> Dict[str, Any]:
         "improvement_percentages": {
             "latency_reduction_percent": round(lat_imp, 1),
             "jitter_reduction_percent": round(jit_imp, 1),
-            "loss_elimination_percent": round(min(100.0, loss_imp), 1)
+            "loss_elimination_percent": round(min(100.0, loss_imp), 1),
         },
         "baseline_trajectory": baseline_data["trajectory"],
-        "qos_on_trajectory": qos_on_data["trajectory"]
+        "qos_on_trajectory": qos_on_data["trajectory"],
     }

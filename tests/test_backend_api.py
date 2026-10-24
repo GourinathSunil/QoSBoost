@@ -2,10 +2,10 @@
 Unit and integration tests for Phase 5: FastAPI Backend REST API and Telemetry.
 """
 
-import pytest
 from fastapi.testclient import TestClient
-from backend.main import app
+
 from backend.database import init_db
+from backend.main import app
 
 init_db()
 client = TestClient(app)
@@ -52,7 +52,7 @@ def test_policies_get_and_put():
     data = res.json()
     assert "active_profile" in data
     assert "Balanced" in data["profiles"]
-    
+
     # 2. Preset switch
     res_switch = client.post("/api/policies/preset/Voice-First")
     assert res_switch.status_code == 200

@@ -3,14 +3,15 @@ REST routes for QoS Policies and Profiles.
 """
 
 import os
+import time
+from typing import Any, Dict
+
 import yaml
 from fastapi import APIRouter, HTTPException
-from typing import Dict, Any
-from backend.models.schemas import PolicyUpdateRequest
-from backend.services.telemetry_service import telemetry_service
+
 from backend.database import save_event
-from backend.models.schemas import EventRecordDB
-import time
+from backend.models.schemas import EventRecordDB, PolicyUpdateRequest
+from backend.services.telemetry_service import telemetry_service
 
 router = APIRouter(prefix="/api/policies", tags=["policies"])
 
@@ -39,9 +40,11 @@ def get_policies() -> Dict[str, Any]:
 def update_policies(req: PolicyUpdateRequest) -> Dict[str, Any]:
     """Updates active profile or modifies QoS parameters live."""
     data = load_yaml_policies()
-    
+
     if req.active_profile not in data.get("profiles", {}):
-        raise HTTPException(status_code=400, detail=f"Profile '{req.active_profile}' does not exist.")
+        raise HTTPException(
+            status_code=400, detail=f"Profile '{req.active_profile}' does not exist."
+        )
 
     before_profile = data.get("active_profile")
     data["active_profile"] = req.active_profile
@@ -59,14 +62,16 @@ def update_policies(req: PolicyUpdateRequest) -> Dict[str, Any]:
     save_yaml_policies(data)
 
     # Log audit event
-    save_event(EventRecordDB(
-        timestamp=time.time(),
-        event_type="POLICY_UPDATE",
-        message=f"QoS Policy updated: Profile set to '{req.active_profile}', QoS Master={telemetry_service.qos_enabled}",
-        reason="User modification via Dashboard",
-        before_value=f"Profile: {before_profile}",
-        after_value=f"Profile: {req.active_profile}"
-    ))
+    save_event(
+        EventRecordDB(
+            timestamp=time.time(),
+            event_type="POLICY_UPDATE",
+            message=f"QoS Policy updated: Profile set to '{req.active_profile}', QoS Master={telemetry_service.qos_enabled}",
+            reason="User modification via Dashboard",
+            before_value=f"Profile: {before_profile}",
+            after_value=f"Profile: {req.active_profile}",
+        )
+    )
 
     return data
 
@@ -81,12 +86,14 @@ def switch_preset(preset_name: str) -> Dict[str, Any]:
     data["active_profile"] = preset_name
     save_yaml_policies(data)
 
-    save_event(EventRecordDB(
-        timestamp=time.time(),
-        event_type="PRESET_SWITCH",
-        message=f"Active QoS preset switched to '{preset_name}'",
-        reason="Quick preset selection"
-    ))
+    save_event(
+        EventRecordDB(
+            timestamp=time.time(),
+            event_type="PRESET_SWITCH",
+            message=f"Active QoS preset switched to '{preset_name}'",
+            reason="Quick preset selection",
+        )
+    )
 
     data["qos_enabled"] = telemetry_service.qos_enabled
     return data

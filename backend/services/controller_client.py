@@ -14,9 +14,10 @@ Implements the REST interface between the FastAPI backend and the Ryu SDN contro
    - POST /qosboost/queues
 """
 
-import httpx
 import logging
-from typing import Dict, Any, List, Optional
+from typing import Any, Dict, List
+
+import httpx
 
 logger = logging.getLogger("qosboost.backend.controller_client")
 
@@ -34,7 +35,7 @@ class RyuControllerClient:
         try:
             async with httpx.AsyncClient(timeout=self.timeout) as client:
                 res = await client.get(f"{self.base_url}/stats/switches")
-                self.is_connected = (res.status_code == 200)
+                self.is_connected = res.status_code == 200
                 return self.is_connected
         except Exception:
             self.is_connected = False
@@ -82,7 +83,9 @@ class RyuControllerClient:
                 res = await client.post(f"{self.base_url}/qosboost/policy", json=policy)
                 return res.status_code in (200, 201)
         except Exception as e:
-            logger.debug("Could not push policy to Ryu controller (%s). Operating in standalone mode.", e)
+            logger.debug(
+                "Could not push policy to Ryu controller (%s). Operating in standalone mode.", e
+            )
             return False
 
 

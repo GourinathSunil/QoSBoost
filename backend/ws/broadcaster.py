@@ -4,7 +4,8 @@ QoSBoost WebSocket Connection and Telemetry Broadcaster.
 
 import json
 import logging
-from typing import Set, Dict, Any
+from typing import Any, Dict, Set
+
 from fastapi import WebSocket
 
 logger = logging.getLogger("qosboost.backend.ws")
@@ -23,7 +24,9 @@ class ConnectionManager:
 
     def disconnect(self, websocket: WebSocket):
         self.active_connections.discard(websocket)
-        logger.info("WebSocket client disconnected. Remaining clients: %d", len(self.active_connections))
+        logger.info(
+            "WebSocket client disconnected. Remaining clients: %d", len(self.active_connections)
+        )
 
     async def broadcast_json(self, data: Dict[str, Any]):
         """Pushes JSON payload to all active WebSocket connections."""
