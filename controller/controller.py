@@ -23,10 +23,14 @@ try:
     from ryu.ofproto import ofproto_v1_3
     from ryu.lib import hub
     from ryu.lib.packet import packet, ethernet, ipv4, udp, tcp, ether_types
+    from ryu.app.wsgi import ControllerBase, WSGIApplication, route
+    from webob import Response
     HAS_RYU = True
 except ImportError:
     HAS_RYU = False
     app_manager = object  # type: ignore
+    ControllerBase = object  # type: ignore
+    route = lambda *args, **kwargs: (lambda f: f)  # type: ignore
 
 from controller.classifier import TrafficClassifier, Flow5Tuple
 from controller.queue_manager import QueueManager
@@ -108,6 +112,11 @@ if HAS_RYU:
             super().__init__(*args, **kwargs)
             self.core = QoSBoostControllerCore()
             self.datapaths = {}
+            # Register WSGI REST endpoint for FastAPI Backend integration
+            wsgi = kwargs.get('wsgi')
+            if wsgi:
+                wsgi.register(QoSBoostRestController, {'qosboost_app': self})
+                logger.info("Registered QoSBoost WSGI REST Controller")
             self.monitor_thread = hub.spawn(self._monitor_loop)
             logger.info("QoSBoost RyuApp loaded successfully for OpenFlow 1.3")
 
@@ -148,3 +157,37 @@ if HAS_RYU:
             parser = datapath.ofproto_parser
             req = parser.OFPPortStatsRequest(datapath, 0, datapath.ofproto.OFPP_ANY)
             datapath.send_msg(req)
+
+
+    class QoSBoostRestController(ControllerBase):
+        """Ryu WSGI REST endpoints for QoSBoost actions."""
+        def __init__(self, req, link, data, **config):
+            super().__init__(req, link, data, **config)
+            self.qosboost_app = data['qosboost_app']
+
+        @route('qosboost', '/qosboost/status', methods=['GET'])
+        def get_status(self, req, **kwargs):
+            import json
+            body = json.dumps({
+                "status": "online",
+                "openflow_version": "1.3",
+                "switches_count": len(self.qosboost_app.datapaths)
+            })
+            return Response(content_type='application/json', body=body)
+
+        @route('qosboost', '/qosboost/queues', methods=['GET'])
+        def get_queues(self, req, **kwargs):
+            import json
+            queues = self.qosboost_app.core.queue_mgr.get_queue_info()
+            return Response(content_type='application/json', body=json.dumps(queues))
+
+        @route('qosboost', '/qosboost/policy', methods=['POST'])
+        def update_policy(self, req, **kwargs):
+            import json
+            try:
+                policy = json.loads(req.body)
+                # Re-apply policy to queues
+                self.qosboost_app.core.classifier.load_rules()
+                return Response(content_type='application/json', body=json.dumps({"status": "applied"}))
+            except Exception as e:
+                return Response(status=500, body=str(e))
