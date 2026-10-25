@@ -28,6 +28,8 @@ def list_events(limit: int = Query(default=50, ge=1, le=200)) -> List[Dict[str, 
                 "event_type": ev.get("type", "ADAPTATION"),
                 "message": ev.get("message"),
                 "reason": ev.get("reason"),
+                "before_value": ev.get("before_value"),
+                "after_value": ev.get("after_value"),
                 "source": "live_engine",
             }
         )

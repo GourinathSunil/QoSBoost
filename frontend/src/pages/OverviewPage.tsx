@@ -5,7 +5,7 @@ import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, LineChart,
 import { Activity, Zap, CheckCircle2, AlertTriangle } from 'lucide-react';
 
 export const OverviewPage: React.FC = () => {
-  const { telemetry, history, policies } = useQoSStore();
+  const { telemetry, history, policies, connected, useMock, setUseMock } = useQoSStore();
 
   const activeProfile = policies.profiles[policies.active_profile] || policies.profiles['Balanced'];
   const voiceTargetLatency = activeProfile?.classes?.voice?.target_latency_ms || 30.0;
@@ -22,6 +22,34 @@ export const OverviewPage: React.FC = () => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-lg)' }}>
+      {/* Offline Alert Banner */}
+      {!connected && !useMock && (
+        <div
+          style={{
+            backgroundColor: 'rgba(247, 107, 21, 0.1)',
+            border: '1px solid rgba(247, 107, 21, 0.3)',
+            borderRadius: 'var(--radius-md)',
+            padding: '12px 16px',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            fontSize: '13px',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#f76b15' }}>
+            <AlertTriangle size={16} />
+            <span>OpenFlow controller is offline. Enable <strong>Mock Demo Mode</strong> for full synthetic interactive telemetry.</span>
+          </div>
+          <button
+            onClick={() => setUseMock(true)}
+            className="btn-primary"
+            style={{ fontSize: '12px', padding: '4px 10px', height: 'auto' }}
+          >
+            Enable Mock Demo
+          </button>
+        </div>
+      )}
+
       {/* KPI Cards Row */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 'var(--space-md)' }}>
         {/* Card 1: Voice Latency */}
@@ -111,6 +139,27 @@ export const OverviewPage: React.FC = () => {
             </span>
           </div>
         </div>
+
+        {/* Card 5: Active Flows */}
+        <div className="card-panel">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span className="caption" style={{ textTransform: 'uppercase', letterSpacing: '0.4px' }}>
+              Active Network Flows
+            </span>
+            <span className="badge" style={{ fontSize: '11px' }}>5-Tuple Cached</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginTop: '8px' }}>
+            <span className="display-md" style={{ color: 'var(--color-ink)' }}>
+              {telemetry.active_flows_count}
+            </span>
+            <span className="caption" style={{ color: 'var(--color-ink-subtle)' }}>flows</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '6px', fontSize: '12px' }}>
+            <span style={{ color: 'var(--color-ink-muted)' }}>
+              1 VoIP (Q1) • 1 Video (Q2) • 2 Bulk (Q3)
+            </span>
+          </div>
+        </div>
       </div>
 
       {/* Topology Canvas (React Flow) */}
@@ -180,7 +229,8 @@ export const OverviewPage: React.FC = () => {
                     fontSize: '12px',
                   }}
                 />
-                <ReferenceLine y={voiceTargetLatency} stroke="#e5484d" strokeDasharray="3 3" label={{ value: `SLA Limit (${voiceTargetLatency}ms)`, fill: '#e5484d', fontSize: 10, position: 'insideTopRight' }} />
+                <ReferenceLine y={voiceTargetLatency} stroke="#e5484d" strokeDasharray="3 3" label={{ value: `SLA Latency (${voiceTargetLatency}ms)`, fill: '#e5484d', fontSize: 10, position: 'insideTopRight' }} />
+                <ReferenceLine y={voiceTargetJitter} stroke="#828fff" strokeDasharray="2 2" label={{ value: `Target Jitter (${voiceTargetJitter}ms)`, fill: '#828fff', fontSize: 10, position: 'insideBottomRight' }} />
                 <Line type="monotone" dataKey="voice.latency_ms" stroke="var(--color-primary)" strokeWidth={2} dot={false} name="Voice Latency (ms)" />
                 <Line type="monotone" dataKey="voice.jitter_ms" stroke="#828fff" strokeWidth={1.5} dot={false} strokeDasharray="2 2" name="Jitter (ms)" />
               </LineChart>

@@ -44,6 +44,30 @@ class EventRecordDB(SQLModel, table=True):
     after_value: Optional[str] = None
 
 
+class PolicyConfigDB(SQLModel, table=True):
+    """Persisted policy configuration snapshot in SQLite."""
+
+    id: Optional[int] = Field(default=None, primary_key=True)
+    timestamp: float = Field(index=True)
+    created_at: datetime = Field(default_factory=utc_now)
+    active_profile: str
+    qos_enabled: bool = Field(default=True)
+    raw_yaml: str
+
+
+class AdmissionDecisionDB(SQLModel, table=True):
+    """Persisted flow admission control decisions (admit, downgrade, reject)."""
+
+    id: Optional[int] = Field(default=None, primary_key=True)
+    timestamp: float = Field(index=True)
+    created_at: datetime = Field(default_factory=utc_now)
+    flow_id: str
+    class_name: str
+    decision: str  # admit, downgrade, reject
+    granted_rate_kbps: float
+    reason: str
+
+
 class FlowItem(BaseModel):
     """Active network flow descriptor."""
 
@@ -60,6 +84,9 @@ class FlowItem(BaseModel):
     packets_count: int
     bytes_count: int
     decision: str = "admit"  # admit, downgrade, reject
+    reason: Optional[str] = "Guaranteed bandwidth headroom available."
+    requested_rate_kbps: Optional[float] = None
+    granted_rate_kbps: Optional[float] = None
     last_seen: float
 
 

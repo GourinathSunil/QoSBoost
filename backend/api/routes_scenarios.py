@@ -7,13 +7,26 @@ import os
 import time
 from typing import Any, Dict
 
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
 from backend.services.telemetry_service import telemetry_service
-from network.scenario import DEFAULT_BASELINE_PATH, run_scenario
+from network.scenario import (
+    DEFAULT_BASELINE_PATH,
+    build_comparison_report,
+    export_charts,
+    run_scenario,
+)
 
 router = APIRouter(prefix="/api/scenario", tags=["scenario"])
+
+PNG_REPORT_PATH = os.path.join(
+    os.path.dirname(__file__), "..", "..", "network", "scenarios", "evaluation_summary.png"
+)
+PDF_REPORT_PATH = os.path.join(
+    os.path.dirname(__file__), "..", "..", "network", "scenarios", "evaluation_summary.pdf"
+)
 
 
 class StartScenarioRequest(BaseModel):
@@ -56,48 +69,52 @@ def get_comparison_report() -> Dict[str, Any]:
     Returns side-by-side comparison report:
     Baseline (QoS OFF) vs Prioritized (QoS ON) with percentage improvements.
     """
-    baseline_data = None
-    if os.path.exists(DEFAULT_BASELINE_PATH):
-        try:
-            with open(DEFAULT_BASELINE_PATH, "r", encoding="utf-8") as f:
-                baseline_data = json.load(f)
-        except Exception:
-            pass
+    rep = build_comparison_report()
+    return rep
 
-    if not baseline_data:
-        # Generate on-demand if not pre-cached
-        baseline_data = run_scenario(qos_enabled=False, duration_seconds=65)
 
-    # Generate QoS ON run
-    qos_on_data = run_scenario(qos_enabled=True, duration_seconds=65)
-
-    base_summary = baseline_data["summary"]
-    qos_summary = qos_on_data["summary"]
-
-    # Compute percentage improvements
-    # Latency improvement: (base - qos) / base * 100
-    lat_imp = (
-        (base_summary["avg_voice_latency_ms"] - qos_summary["avg_voice_latency_ms"])
-        / base_summary["avg_voice_latency_ms"]
-    ) * 100.0
-    jit_imp = (
-        (base_summary["avg_voice_jitter_ms"] - qos_summary["avg_voice_jitter_ms"])
-        / max(0.1, base_summary["avg_voice_jitter_ms"])
-    ) * 100.0
-    loss_imp = (
-        (base_summary["avg_voice_loss_percent"] - qos_summary["avg_voice_loss_percent"])
-        / max(0.1, base_summary["avg_voice_loss_percent"])
-    ) * 100.0
-
+@router.post("/report/generate")
+def generate_fresh_report() -> Dict[str, Any]:
+    """Forces re-run of comparison evaluation and exports PNG + PDF charts."""
+    rep = build_comparison_report()
+    export_charts(rep, png_path=PNG_REPORT_PATH, pdf_path=PDF_REPORT_PATH)
     return {
-        "timestamp": time.time(),
-        "baseline_off": base_summary,
-        "qos_on": qos_summary,
-        "improvement_percentages": {
-            "latency_reduction_percent": round(lat_imp, 1),
-            "jitter_reduction_percent": round(jit_imp, 1),
-            "loss_elimination_percent": round(min(100.0, loss_imp), 1),
-        },
-        "baseline_trajectory": baseline_data["trajectory"],
-        "qos_on_trajectory": qos_on_data["trajectory"],
+        "status": "generated",
+        "improvement_percentages": rep["improvement_percentages"],
+        "png_path": PNG_REPORT_PATH,
+        "pdf_path": PDF_REPORT_PATH,
     }
+
+
+@router.get("/report/png")
+def get_report_png():
+    """Serves the generated high-resolution comparison chart in PNG format."""
+    if not os.path.exists(PNG_REPORT_PATH):
+        rep = build_comparison_report()
+        export_charts(rep, png_path=PNG_REPORT_PATH, pdf_path=PDF_REPORT_PATH)
+
+    if not os.path.exists(PNG_REPORT_PATH):
+        raise HTTPException(status_code=404, detail="PNG report not found")
+
+    return FileResponse(
+        PNG_REPORT_PATH,
+        media_type="image/png",
+        filename="qosboost-evaluation-summary.png",
+    )
+
+
+@router.get("/report/pdf")
+def get_report_pdf():
+    """Serves the generated multi-page evaluation report in PDF format."""
+    if not os.path.exists(PDF_REPORT_PATH):
+        rep = build_comparison_report()
+        export_charts(rep, png_path=PNG_REPORT_PATH, pdf_path=PDF_REPORT_PATH)
+
+    if not os.path.exists(PDF_REPORT_PATH):
+        raise HTTPException(status_code=404, detail="PDF report not found")
+
+    return FileResponse(
+        PDF_REPORT_PATH,
+        media_type="application/pdf",
+        filename="qosboost-evaluation-summary.pdf",
+    )

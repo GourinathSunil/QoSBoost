@@ -1,22 +1,41 @@
 import React, { useState } from 'react';
 import { useQoSStore } from '../store/useQoSStore';
-import { Save, Check, Shield, Zap } from 'lucide-react';
+import { ClassPolicy, MeterInfo } from '../types';
+import { Save, Check, Shield, Zap, AlertCircle, AlertTriangle } from 'lucide-react';
 
 export const PoliciesPage: React.FC = () => {
-  const { policies, switchPreset, updatePolicy, savePolicies, toggleQoS } = useQoSStore();
-  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
+  const { policies, switchPreset, updatePolicy, savePolicies, toggleQoS, meters } = useQoSStore();
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
 
   const activeProfile = policies.profiles[policies.active_profile] || policies.profiles['Balanced'];
   const presets = ['Balanced', 'Voice-First', 'Video-Conference'];
 
+  // Input Validation
+  const validationErrors: string[] = [];
+  (Object.entries(activeProfile?.classes || {}) as [string, ClassPolicy][]).forEach(([className, classData]) => {
+    if (classData.min_rate_kbps > classData.max_rate_kbps) {
+      validationErrors.push(`Class '${className}': Min guaranteed rate (${classData.min_rate_kbps} kbps) exceeds max rate (${classData.max_rate_kbps} kbps).`);
+    }
+    if (classData.target_latency_ms <= 0) {
+      validationErrors.push(`Class '${className}': Target latency must be positive.`);
+    }
+    if (classData.target_jitter_ms <= 0) {
+      validationErrors.push(`Class '${className}': Target jitter must be positive.`);
+    }
+  });
+
+  const isValid = validationErrors.length === 0;
+
   const handleApply = async () => {
+    if (!isValid) return;
     setSaveStatus('saving');
     const success = await savePolicies();
     if (success) {
       setSaveStatus('saved');
       setTimeout(() => setSaveStatus('idle'), 2500);
     } else {
-      setSaveStatus('idle');
+      setSaveStatus('error');
+      setTimeout(() => setSaveStatus('idle'), 3000);
     }
   };
 
@@ -34,6 +53,7 @@ export const PoliciesPage: React.FC = () => {
         {/* Action Controls */}
         <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
           <button
+            id="btn-policy-master-toggle"
             onClick={toggleQoS}
             className={policies.qos_enabled ? 'btn-primary' : 'btn-secondary'}
           >
@@ -45,13 +65,60 @@ export const PoliciesPage: React.FC = () => {
             id="btn-apply-policy"
             onClick={handleApply}
             className="btn-primary"
-            disabled={saveStatus === 'saving'}
+            disabled={saveStatus === 'saving' || !isValid}
+            style={{
+              backgroundColor: !isValid
+                ? 'var(--color-surface-2)'
+                : saveStatus === 'error'
+                ? '#e5484d'
+                : undefined,
+              borderColor: !isValid ? 'var(--color-hairline)' : undefined,
+              cursor: !isValid ? 'not-allowed' : 'pointer',
+            }}
           >
-            {saveStatus === 'saved' ? <Check size={14} /> : <Save size={14} />}
-            {saveStatus === 'saved' ? 'Applied to OVS' : saveStatus === 'saving' ? 'Applying...' : 'Apply Live Policy'}
+            {saveStatus === 'saved' ? (
+              <Check size={14} />
+            ) : saveStatus === 'error' ? (
+              <AlertCircle size={14} />
+            ) : (
+              <Save size={14} />
+            )}
+            {saveStatus === 'saved'
+              ? 'Applied to OVS & Ryu'
+              : saveStatus === 'saving'
+              ? 'Applying to Queues...'
+              : saveStatus === 'error'
+              ? 'Apply Failed'
+              : !isValid
+              ? 'Validation Error'
+              : 'Apply Live Policy'}
           </button>
         </div>
       </div>
+
+      {/* Validation Errors Box */}
+      {!isValid && (
+        <div
+          style={{
+            backgroundColor: 'rgba(229, 72, 77, 0.1)',
+            border: '1px solid rgba(229, 72, 77, 0.3)',
+            borderRadius: 'var(--radius-md)',
+            padding: '12px 16px',
+            fontSize: '13px',
+            color: '#e5484d',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 600, marginBottom: '4px' }}>
+            <AlertTriangle size={14} />
+            Policy Form Validation Issues:
+          </div>
+          <ul style={{ paddingLeft: '20px', lineHeight: 1.5 }}>
+            {validationErrors.map((err, i) => (
+              <li key={i}>{err}</li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       {/* Preset Profiles Selector (DESIGN.md pricing-tab spec) */}
       <div className="card-panel" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 24px' }}>
@@ -201,6 +268,90 @@ export const PoliciesPage: React.FC = () => {
             </div>
             <div className="caption" style={{ marginTop: '2px' }}>Oscillation suppression</div>
           </div>
+        </div>
+      </div>
+
+      {/* OpenFlow 1.3 Meter Management & Hit Counters */}
+      <div className="card-panel">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+          <div>
+            <div className="card-title">OpenFlow 1.3 Meters & Rate-Limiting Bands</div>
+            <p className="caption" style={{ marginTop: '2px' }}>
+              Hardware/OVS rate limiting applied on packet ingress to enforce flow bounds and police rogue UDP flooders
+            </p>
+          </div>
+          <span className="badge" style={{ backgroundColor: 'rgba(94, 106, 210, 0.12)', color: 'var(--color-primary)' }}>
+            OF 1.3 OFPInstructionMeter
+          </span>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '16px' }}>
+          {meters.map((meter) => {
+            const isDrop = meter.action === 'drop';
+            return (
+              <div
+                key={meter.id}
+                style={{
+                  padding: '16px',
+                  backgroundColor: 'var(--color-surface-2)',
+                  borderRadius: 'var(--radius-md)',
+                  border: '1px solid var(--color-hairline)',
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                  <div style={{ fontWeight: 600, fontSize: '14px', color: 'var(--color-ink)' }}>
+                    Meter #{meter.id}: {meter.name}
+                  </div>
+                  <span
+                    className="badge"
+                    style={{
+                      backgroundColor: isDrop ? 'rgba(229, 72, 77, 0.12)' : 'rgba(247, 107, 21, 0.12)',
+                      color: isDrop ? '#e5484d' : '#f76b15',
+                      fontSize: '11px',
+                    }}
+                  >
+                    Action: {meter.action.toUpperCase()}
+                  </span>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', fontSize: '12px', marginBottom: '12px' }}>
+                  <div>
+                    <span style={{ color: 'var(--color-ink-subtle)' }}>Rate Limit: </span>
+                    <span className="font-mono" style={{ color: 'var(--color-ink)', fontWeight: 500 }}>
+                      {meter.rate_kbps} kbps
+                    </span>
+                  </div>
+                  <div>
+                    <span style={{ color: 'var(--color-ink-subtle)' }}>Burst Allowance: </span>
+                    <span className="font-mono" style={{ color: 'var(--color-ink)', fontWeight: 500 }}>
+                      {meter.burst_kbps} kbps
+                    </span>
+                  </div>
+                </div>
+
+                <div style={{ borderTop: '1px solid var(--color-hairline)', paddingTop: '10px', display: 'flex', justifyContent: 'space-between', fontSize: '12px' }}>
+                  <div>
+                    <div className="caption">PACKETS PROCESSED</div>
+                    <div className="font-mono" style={{ color: 'var(--color-ink)', marginTop: '2px' }}>
+                      {meter.packet_in_count.toLocaleString()}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="caption">{isDrop ? 'PACKETS DROPPED' : 'PACKETS REMARKED'}</div>
+                    <div className="font-mono" style={{ color: isDrop ? '#e5484d' : '#f76b15', marginTop: '2px', fontWeight: 600 }}>
+                      {meter.drop_packet_count.toLocaleString()}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="caption">BYTES ENFORCED</div>
+                    <div className="font-mono" style={{ color: 'var(--color-ink-muted)', marginTop: '2px' }}>
+                      {(meter.drop_byte_count / 1024 / 1024).toFixed(1)} MB
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>

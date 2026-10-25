@@ -1,0 +1,95 @@
+{
+  "model_type": "RandomForestClassifier",
+  "n_estimators": 100,
+  "features": [
+    "mean_packet_size",
+    "std_packet_size",
+    "mean_inter_arrival_time",
+    "std_inter_arrival_time",
+    "flow_duration",
+    "bytes_per_sec"
+  ],
+  "classes": [
+    "voice",
+    "video",
+    "web",
+    "bulk"
+  ],
+  "overall_accuracy": 1.0,
+  "accuracy_percentage": 100.0,
+  "test_samples_count": 600,
+  "train_samples_count": 1800,
+  "confusion_matrix": [
+    [
+      150,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      150,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      150,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      150
+    ]
+  ],
+  "classification_report": {
+    "voice": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 150.0
+    },
+    "video": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 150.0
+    },
+    "web": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 150.0
+    },
+    "bulk": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 150.0
+    },
+    "accuracy": 1.0,
+    "macro avg": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 600.0
+    },
+    "weighted avg": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 600.0
+    }
+  },
+  "feature_importances": {
+    "mean_packet_size": 0.1569,
+    "std_packet_size": 0.2142,
+    "mean_inter_arrival_time": 0.1646,
+    "std_inter_arrival_time": 0.1566,
+    "flow_duration": 0.0873,
+    "bytes_per_sec": 0.2204
+  }
+}

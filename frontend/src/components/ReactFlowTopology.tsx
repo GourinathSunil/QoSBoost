@@ -30,7 +30,8 @@ const SwitchNode: React.FC<NodeProps> = ({ data }) => {
         boxShadow: isCongested ? '0 0 10px rgba(229, 72, 77, 0.4)' : undefined,
       }}
     >
-      <Handle type="target" position={Position.Left} style={{ background: 'var(--color-primary)' }} />
+      <Handle type="target" position={Position.Left} id="left" style={{ background: 'var(--color-primary)' }} />
+      <Handle type="target" position={Position.Top} id="top" style={{ background: 'var(--color-primary)' }} />
       <div style={{ fontWeight: 600, fontSize: '13px', color: 'var(--color-ink)' }}>{data.label as string}</div>
       <div className="font-mono caption" style={{ color: 'var(--color-ink-subtle)', marginTop: '2px' }}>
         {data.sublabel as string}
@@ -40,7 +41,8 @@ const SwitchNode: React.FC<NodeProps> = ({ data }) => {
           HTB Q0-Q3
         </div>
       )}
-      <Handle type="source" position={Position.Right} style={{ background: 'var(--color-primary)' }} />
+      <Handle type="source" position={Position.Right} id="right" style={{ background: 'var(--color-primary)' }} />
+      <Handle type="source" position={Position.Bottom} id="bottom" style={{ background: 'var(--color-primary)' }} />
     </div>
   );
 };
@@ -87,12 +89,12 @@ const nodeTypes = {
 };
 
 export const ReactFlowTopology: React.FC = () => {
-  const { telemetry, policies } = useQoSStore();
+  const { telemetry } = useQoSStore();
   const util = telemetry.link_utilization;
   const isRerouted = telemetry.rerouted;
 
   const bottleneckColor = util > 80 ? '#e5484d' : util > 60 ? '#f76b15' : 'var(--color-primary)';
-  const bottleneckWidth = Math.max(2, Math.min(5, (util / 100) * 5));
+  const bottleneckWidth = Math.max(2, Math.min(6, (util / 100) * 6));
 
   // Compute Nodes
   const initialNodes: Node[] = useMemo(
@@ -108,8 +110,8 @@ export const ReactFlowTopology: React.FC = () => {
       { id: 's1', type: 'switchNode', position: { x: 230, y: 175 }, data: { label: 'Switch s1', sublabel: 'Ingress Edge', role: 'ingress' } },
 
       // Core Switches
-      { id: 's2', type: 'switchNode', position: { x: 480, y: 80 }, data: { label: 'Switch s2', sublabel: 'Bottleneck (10M)', role: 'bottleneck', utilization: util } },
-      { id: 's3', type: 'switchNode', position: { x: 480, y: 270 }, data: { label: 'Switch s3', sublabel: 'Alternate (20M)', role: 'alternate' } },
+      { id: 's2', type: 'switchNode', position: { x: 480, y: 70 }, data: { label: 'Switch s2', sublabel: 'Bottleneck (10M)', role: 'bottleneck', utilization: util } },
+      { id: 's3', type: 'switchNode', position: { x: 480, y: 280 }, data: { label: 'Switch s3', sublabel: 'Alternate (20M)', role: 'alternate' } },
 
       // Egress Switch
       { id: 's4', type: 'switchNode', position: { x: 720, y: 175 }, data: { label: 'Switch s4', sublabel: 'Egress Edge', role: 'egress' } },
@@ -153,6 +155,23 @@ export const ReactFlowTopology: React.FC = () => {
         },
         label: isRerouted ? 'Rerouted Active' : '20M Alt',
         labelStyle: { fill: isRerouted ? 'var(--color-primary)' : 'var(--color-ink-subtle)', fontSize: 11 },
+      },
+
+      // s2 to s3 (Core Cross-Link: 50 Mbps, 5ms)
+      {
+        id: 'e-s2-s3',
+        source: 's2',
+        target: 's3',
+        sourceHandle: 'bottom',
+        targetHandle: 'top',
+        animated: isRerouted,
+        style: {
+          stroke: isRerouted ? 'var(--color-brand-secure)' : 'var(--color-hairline-strong)',
+          strokeWidth: isRerouted ? 2.5 : 1.5,
+          strokeDasharray: isRerouted ? undefined : '4 4',
+        },
+        label: '50M Cross',
+        labelStyle: { fill: 'var(--color-ink-subtle)', fontSize: 10, fontFamily: 'var(--font-mono)' },
       },
 
       // s2 to s4 & s3 to s4

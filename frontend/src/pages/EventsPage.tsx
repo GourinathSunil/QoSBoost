@@ -1,9 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useQoSStore } from '../store/useQoSStore';
-import { ShieldAlert, Cpu, GitFork, Sliders, CheckCircle } from 'lucide-react';
+import { AuditEvent } from '../types';
+import { ShieldAlert, Cpu, GitFork, Sliders, CheckCircle, Search, Radio } from 'lucide-react';
 
 export const EventsPage: React.FC = () => {
   const { events } = useQoSStore();
+  const [filterType, setFilterType] = useState<string>('ALL');
+  const [searchTerm, setSearchTerm] = useState<string>('');
 
   const getEventBadge = (type: string) => {
     switch (type) {
@@ -20,25 +23,88 @@ export const EventsPage: React.FC = () => {
     }
   };
 
+  const filteredEvents = events.filter((ev: AuditEvent) => {
+    const matchesFilter = filterType === 'ALL' || ev.event_type === filterType;
+    const term = searchTerm.toLowerCase();
+    const matchesSearch =
+      !searchTerm ||
+      ev.message.toLowerCase().includes(term) ||
+      (ev.reason && ev.reason.toLowerCase().includes(term)) ||
+      (ev.before_value && ev.before_value.toLowerCase().includes(term)) ||
+      (ev.after_value && ev.after_value.toLowerCase().includes(term));
+    return matchesFilter && matchesSearch;
+  });
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-lg)' }}>
-      {/* Header */}
-      <div>
-        <h1 className="headline">SDN Event Audit Log</h1>
-        <p className="subhead" style={{ fontSize: '15px', marginTop: '4px' }}>
-          Real-time chronological timeline of dynamic queue adjustments, meter drops, admission gating, and routing updates
-        </p>
+      {/* Header and Controls */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
+        <div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <h1 className="headline">SDN Event Audit Log</h1>
+            <span className="badge" style={{ fontSize: '11px', color: 'var(--color-semantic-success)' }}>
+              <Radio size={11} className="pulse-dot" style={{ width: '6px', height: '6px' }} />
+              Live Auditing
+            </span>
+          </div>
+          <p className="subhead" style={{ fontSize: '15px', marginTop: '4px' }}>
+            Real-time chronological timeline of dynamic queue adjustments, meter drops, admission gating, and routing updates
+          </p>
+        </div>
+
+        {/* Filter and Search Bar */}
+        <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
+          {/* Filter tabs */}
+          <div className="tab-switcher">
+            {[
+              { id: 'ALL', label: 'All' },
+              { id: 'ADAPTATION', label: 'Adaptation' },
+              { id: 'METER_DROP', label: 'Meter' },
+              { id: 'REROUTE', label: 'Reroute' },
+              { id: 'ADMISSION', label: 'Admission' },
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                id={`filter-event-${tab.id.toLowerCase()}`}
+                onClick={() => setFilterType(tab.id)}
+                className={`tab-btn ${filterType === tab.id ? 'tab-btn-selected' : ''}`}
+                style={{ fontSize: '12px', padding: '5px 12px' }}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Search box */}
+          <div style={{ position: 'relative' }}>
+            <Search size={14} style={{ position: 'absolute', left: '10px', top: '11px', color: 'var(--color-ink-subtle)' }} />
+            <input
+              type="text"
+              placeholder="Search event logs..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="input-field"
+              style={{ paddingLeft: '32px', width: '200px' }}
+            />
+          </div>
+        </div>
       </div>
 
       {/* Events List Container */}
       <div className="card-panel" style={{ padding: 0, overflow: 'hidden' }}>
-        {events.length === 0 ? (
-          <div style={{ padding: '48px', textAlign: 'center', color: 'var(--color-ink-subtle)' }}>
-            No audit events recorded yet. Dynamic events will appear during network congestion.
+        {filteredEvents.length === 0 ? (
+          <div style={{ padding: '60px 20px', textAlign: 'center', color: 'var(--color-ink-subtle)' }}>
+            <Cpu size={24} style={{ margin: '0 auto 8px auto', opacity: 0.5 }} />
+            <div style={{ fontWeight: 500, fontSize: '14px', color: 'var(--color-ink)' }}>No Audit Events Found</div>
+            <div className="caption" style={{ marginTop: '4px' }}>
+              {events.length === 0
+                ? 'No events logged yet. Congestion events trigger automatically during the benchmark scenario.'
+                : 'No events match the selected filter or search keyword. Try clearing filters.'}
+            </div>
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column' }}>
-            {events.map((ev, index) => {
+            {filteredEvents.map((ev: AuditEvent, index: number) => {
               const meta = getEventBadge(ev.event_type);
               const IconComp = meta.icon;
               return (

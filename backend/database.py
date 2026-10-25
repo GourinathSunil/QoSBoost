@@ -4,11 +4,16 @@ Uses SQLModel / SQLAlchemy for light-weight, file-based persistence of telemetry
 """
 
 import os
-from typing import List
+from typing import List, Optional
 
 from sqlmodel import Session, SQLModel, col, create_engine, select
 
-from backend.models.schemas import EventRecordDB, MetricSnapshotDB
+from backend.models.schemas import (
+    AdmissionDecisionDB,
+    EventRecordDB,
+    MetricSnapshotDB,
+    PolicyConfigDB,
+)
 
 DB_FILE = os.path.join(os.path.dirname(__file__), "..", "qosboost.db")
 sqlite_url = f"sqlite:///{os.path.abspath(DB_FILE)}"
@@ -39,6 +44,38 @@ def save_event(event: EventRecordDB):
     with Session(engine) as session:
         session.add(event)
         session.commit()
+
+
+def save_policy_config(policy: PolicyConfigDB):
+    """Persists a policy configuration snapshot to SQLite."""
+    with Session(engine) as session:
+        session.add(policy)
+        session.commit()
+
+
+def get_latest_policy_config() -> Optional[PolicyConfigDB]:
+    """Queries the most recent policy configuration from SQLite."""
+    with Session(engine) as session:
+        statement = select(PolicyConfigDB).order_by(col(PolicyConfigDB.timestamp).desc()).limit(1)
+        return session.exec(statement).first()
+
+
+def save_admission_decision(decision: AdmissionDecisionDB):
+    """Persists an admission control decision to SQLite."""
+    with Session(engine) as session:
+        session.add(decision)
+        session.commit()
+
+
+def get_recent_admission_decisions(limit: int = 50) -> List[AdmissionDecisionDB]:
+    """Queries recent admission control decisions ordered by timestamp descending."""
+    with Session(engine) as session:
+        statement = (
+            select(AdmissionDecisionDB)
+            .order_by(col(AdmissionDecisionDB.timestamp).desc())
+            .limit(limit)
+        )
+        return list(session.exec(statement).all())
 
 
 def get_recent_snapshots(limit: int = 60) -> List[MetricSnapshotDB]:

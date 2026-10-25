@@ -1,4 +1,4 @@
-import { MetricSnapshot, FlowItem, PoliciesData, AuditEvent } from './types';
+import { MetricSnapshot, FlowItem, PoliciesData, AuditEvent, MeterInfo, MLClassifierInfo } from './types';
 
 export const INITIAL_MOCK_POLICIES: PoliciesData = {
   active_profile: 'Balanced',
@@ -155,6 +155,55 @@ export const INITIAL_MOCK_POLICIES: PoliciesData = {
   },
 };
 
+export const INITIAL_MOCK_METERS: MeterInfo[] = [
+  {
+    id: 1,
+    name: 'flooder_meter',
+    rate_kbps: 1000,
+    burst_kbps: 200,
+    action: 'drop',
+    packet_in_count: 54100,
+    drop_packet_count: 14200,
+    drop_byte_count: 7100000,
+  },
+  {
+    id: 2,
+    name: 'bulk_meter',
+    rate_kbps: 6000,
+    burst_kbps: 1000,
+    action: 'dscp_remark',
+    remark_dscp: 8,
+    packet_in_count: 98000,
+    drop_packet_count: 3100,
+    drop_byte_count: 4650000,
+  },
+];
+
+export const INITIAL_MOCK_ML_INFO: MLClassifierInfo = {
+  ml_mode: false,
+  cached_flows_count: 5,
+  model_info: {
+    model_type: 'RandomForestClassifier',
+    overall_accuracy: 1.0,
+    accuracy_percentage: 100.0,
+    classes: ['voice', 'video', 'web', 'bulk'],
+    confusion_matrix: [
+      [150, 0, 0, 0],
+      [0, 150, 0, 0],
+      [0, 0, 150, 0],
+      [0, 0, 0, 150],
+    ],
+    feature_importances: {
+      bytes_per_sec: 0.2204,
+      std_packet_size: 0.2142,
+      mean_inter_arrival_time: 0.1646,
+      mean_packet_size: 0.1569,
+      std_inter_arrival_time: 0.1566,
+      flow_duration: 0.0873,
+    },
+  },
+};
+
 export const INITIAL_MOCK_FLOWS: FlowItem[] = [
   {
     id: 'flow-voip-1',
@@ -170,6 +219,9 @@ export const INITIAL_MOCK_FLOWS: FlowItem[] = [
     packets_count: 3200,
     bytes_count: 512000,
     decision: 'admit',
+    reason: 'Guaranteed bandwidth headroom available on bottleneck.',
+    requested_rate_kbps: 100.0,
+    granted_rate_kbps: 100.0,
     last_seen: Date.now(),
   },
   {
@@ -186,6 +238,28 @@ export const INITIAL_MOCK_FLOWS: FlowItem[] = [
     packets_count: 58400,
     bytes_count: 76854400,
     decision: 'admit',
+    reason: 'HD video stream admitted with full reservation.',
+    requested_rate_kbps: 3200.0,
+    granted_rate_kbps: 3200.0,
+    last_seen: Date.now(),
+  },
+  {
+    id: 'flow-video-downgraded',
+    protocol: 'UDP',
+    src_ip: '10.0.0.2',
+    src_port: 52348,
+    dst_ip: '10.0.0.6',
+    dst_port: 5003,
+    class_name: 'video',
+    queue_id: 2,
+    path: 's1 -> s3 -> s4',
+    rate_kbps: 1200.0,
+    packets_count: 18200,
+    bytes_count: 21840000,
+    decision: 'downgrade',
+    reason: 'Bottleneck constrained: Adapted from HD (3 Mbps) to SD (1.2 Mbps).',
+    requested_rate_kbps: 3000.0,
+    granted_rate_kbps: 1200.0,
     last_seen: Date.now(),
   },
   {
@@ -202,6 +276,9 @@ export const INITIAL_MOCK_FLOWS: FlowItem[] = [
     packets_count: 142000,
     bytes_count: 213000000,
     decision: 'admit',
+    reason: 'Elastic bulk flow allocated to scavenger HTB queue #3.',
+    requested_rate_kbps: 5000.0,
+    granted_rate_kbps: 4800.0,
     last_seen: Date.now(),
   },
   {
@@ -218,6 +295,9 @@ export const INITIAL_MOCK_FLOWS: FlowItem[] = [
     packets_count: 89000,
     bytes_count: 133500000,
     decision: 'admit',
+    reason: 'Elastic bulk flow allocated to scavenger HTB queue #3.',
+    requested_rate_kbps: 4000.0,
+    granted_rate_kbps: 3200.0,
     last_seen: Date.now(),
   },
   {
@@ -234,6 +314,9 @@ export const INITIAL_MOCK_FLOWS: FlowItem[] = [
     packets_count: 42000,
     bytes_count: 21000000,
     decision: 'downgrade',
+    reason: 'Rogue traffic rate-limited and dropped by OpenFlow 1.3 Meter #1.',
+    requested_rate_kbps: 3500.0,
+    granted_rate_kbps: 1000.0,
     last_seen: Date.now(),
   },
 ];

@@ -171,7 +171,7 @@ TOPOLOGY_METADATA: Dict[str, Any] = {
             "is_bottleneck": True,
             "bottleneck_port": "s1-eth6",
         },
-        # Alternate Path: s1-eth7 <-> s3-eth1 (20 Mbps, 15ms higher latency)
+        # Alternate Path 1: s1-eth7 <-> s3-eth1 (20 Mbps, 15ms higher latency)
         {
             "source": "s1",
             "target": "s3",
@@ -179,6 +179,16 @@ TOPOLOGY_METADATA: Dict[str, Any] = {
             "dst_port": 1,
             "bw_mbps": 20,
             "delay_ms": 15.0,
+            "is_bottleneck": False,
+        },
+        # Alternate Path 2 Cross-Core Link: s2-eth3 <-> s3-eth3 (50 Mbps, 5ms)
+        {
+            "source": "s2",
+            "target": "s3",
+            "src_port": 3,
+            "dst_port": 3,
+            "bw_mbps": 50,
+            "delay_ms": 5.0,
             "is_bottleneck": False,
         },
         # Core to Egress Links: s2-eth2 <-> s4-eth1, s3-eth2 <-> s4-eth2 (100 Mbps, 1ms)
@@ -263,8 +273,11 @@ if HAS_MININET:
             # Bottleneck Link: s1-port6 <-> s2-port1 (10 Mbps, 2ms delay, 100 packet buffer)
             self.addLink(s1, s2, port1=6, port2=1, bw=10, delay="2ms", max_queue_size=100)
 
-            # Alternate Route: s1-port7 <-> s3-port1 (20 Mbps, 15ms delay)
+            # Alternate Route 1: s1-port7 <-> s3-port1 (20 Mbps, 15ms delay)
             self.addLink(s1, s3, port1=7, port2=1, bw=20, delay="15ms", max_queue_size=200)
+
+            # Alternate Route 2 Cross Link: s2-port3 <-> s3-port3 (50 Mbps, 5ms delay)
+            self.addLink(s2, s3, port1=3, port2=3, bw=50, delay="5ms")
 
             # Core to Egress Links: s2-port2 <-> s4-port1, s3-port2 <-> s4-port2
             self.addLink(s2, s4, port1=2, port2=1, bw=100, delay="1ms")

@@ -335,7 +335,9 @@ class SimulatedScenarioEngine:
                             "timestamp": round(t, 1),
                             "type": "ADAPTATION",
                             "message": "Dynamic Allocation: Link utilization > 80%. Bulk queue clamped from 8000k -> 4800k.",
-                            "reason": "High-watermark threshold exceeded",
+                            "reason": "High-watermark threshold (80%) exceeded",
+                            "before_value": "8000 kbps",
+                            "after_value": "4800 kbps",
                         }
                     )
                 if len(self.events) == 1 and t >= 41.0:
@@ -345,6 +347,8 @@ class SimulatedScenarioEngine:
                             "type": "METER_DROP",
                             "message": "OpenFlow Meter #1 triggered: Rogue UDP flooder on h5 dropped 2500 kbps.",
                             "reason": "Exceeded 1000 kbps meter band",
+                            "before_value": "3500 kbps",
+                            "after_value": "1000 kbps (policed)",
                         }
                     )
                     self.events.append(
@@ -353,6 +357,21 @@ class SimulatedScenarioEngine:
                             "type": "REROUTE",
                             "message": "QoS Routing: Video stream h2 rerouted via Alternate Path (s1 -> s3 -> s4).",
                             "reason": "Residual bottleneck bandwidth < video reservation",
+                            "before_value": "Primary (s1 -> s2 -> s4)",
+                            "after_value": "Alternate (s1 -> s3 -> s4)",
+                        }
+                    )
+            elif t >= 60.0:
+                self.dynamic_bulk_limit_kbps = 8000.0
+                if len(self.events) == 3 and t >= 61.0:
+                    self.events.append(
+                        {
+                            "timestamp": round(t, 1),
+                            "type": "ADAPTATION",
+                            "message": "Hysteresis Controller: Link utilization < 60% for 4s cooldown. Bulk queue restored to nominal 8000k.",
+                            "reason": "Low-watermark threshold (<60%) cleared without flapping",
+                            "before_value": "3200 kbps",
+                            "after_value": "8000 kbps",
                         }
                     )
 

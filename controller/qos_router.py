@@ -40,8 +40,10 @@ class QoSRouter:
         links = [
             ("s1", "s2", 2.0, 10.0),  # Primary Bottleneck Path (10 Mbps, 2ms)
             ("s2", "s1", 2.0, 10.0),
-            ("s1", "s3", 15.0, 20.0),  # Alternate Path (20 Mbps, 15ms base delay)
+            ("s1", "s3", 15.0, 20.0),  # Alternate Core Path 1 (20 Mbps, 15ms base delay)
             ("s3", "s1", 15.0, 20.0),
+            ("s2", "s3", 5.0, 50.0),  # Cross-Core Link providing Alternate Path 2 (50 Mbps, 5ms)
+            ("s3", "s2", 5.0, 50.0),
             ("s2", "s4", 1.0, 100.0),  # Egress links (100 Mbps, 1ms)
             ("s4", "s2", 1.0, 100.0),
             ("s3", "s4", 1.0, 100.0),

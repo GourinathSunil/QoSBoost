@@ -46,7 +46,35 @@ export interface FlowItem {
   packets_count: number;
   bytes_count: number;
   decision: 'admit' | 'downgrade' | 'reject';
+  reason?: string;
+  requested_rate_kbps?: number;
+  granted_rate_kbps?: number;
   last_seen: number;
+}
+
+export interface MeterInfo {
+  id: number;
+  name: string;
+  rate_kbps: number;
+  burst_kbps: number;
+  action: 'drop' | 'dscp_remark';
+  remark_dscp?: number;
+  packet_in_count: number;
+  drop_packet_count: number;
+  drop_byte_count: number;
+}
+
+export interface MLClassifierInfo {
+  ml_mode: boolean;
+  cached_flows_count: number;
+  model_info: {
+    model_type: string;
+    overall_accuracy: number;
+    accuracy_percentage: number;
+    confusion_matrix: number[][];
+    feature_importances: Record<string, number>;
+    classes: string[];
+  };
 }
 
 export interface ClassPolicy {

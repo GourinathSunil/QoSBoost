@@ -15,9 +15,11 @@ Classification features:
 
 import logging
 import os
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 import yaml
+
+from ml.classifier_model import MLFlowClassifier
 
 logger = logging.getLogger("qosboost.controller.classifier")
 
@@ -59,7 +61,7 @@ class TrafficClassifier:
         self.rules: List[Dict[str, Any]] = []
         self.flow_cache: Dict[str, str] = {}  # 5-tuple string -> class_name
         self.ml_mode = False
-        self.ml_model = None
+        self.ml_classifier = MLFlowClassifier()
         self.load_rules()
 
     def load_rules(self) -> bool:
@@ -115,10 +117,19 @@ class TrafficClassifier:
         self.ml_mode = enabled
         logger.info("Classifier ML mode set to %s", enabled)
 
-    def classify(self, flow: Flow5Tuple, dscp: Optional[int] = None) -> str:
+    def classify(
+        self,
+        flow: Flow5Tuple,
+        dscp: Optional[int] = None,
+        packet_size: Optional[int] = None,
+        inter_arrival_time: Optional[float] = None,
+    ) -> str:
         """
         Classifies a flow into 'voice', 'video', 'web', or 'bulk'.
-        Checks fast 5-tuple cache first; if cache miss, evaluates rules and caches result.
+        Checks fast 5-tuple cache first; if cache miss:
+        - If ML mode enabled: evaluates Random Forest ML model on flow stats.
+        - If Rule mode (default): evaluates DSCP and port rules. If unknown/encrypted,
+          falls back to ML classifier prediction.
         """
         key = flow.to_key()
         if key in self.flow_cache:
@@ -133,7 +144,22 @@ class TrafficClassifier:
                 self.flow_cache[key] = "video"
                 return "video"
 
-        # 2. Rule evaluation
+        # 2. If explicit ML mode is on, run Random Forest prediction
+        if self.ml_mode:
+            mean_pkt = float(packet_size or (200 if flow.dst_port in (5004, 5060) else 1400))
+            pred_class, _ = self.ml_classifier.predict(
+                mean_packet_size=mean_pkt,
+                std_packet_size=20.0,
+                mean_inter_arrival_time=float(inter_arrival_time or 0.01),
+                std_inter_arrival_time=0.002,
+                flow_duration=10.0,
+                bytes_per_sec=float(mean_pkt * 100),
+            )
+            self.flow_cache[key] = pred_class
+            logger.debug("ML classified flow %s as '%s'", key, pred_class)
+            return pred_class
+
+        # 3. Rule evaluation
         matched_class = None
         for rule in self.rules:
             if rule.get("protocol") and rule["protocol"].lower() != flow.proto:
@@ -158,17 +184,51 @@ class TrafficClassifier:
                 if matched_class:
                     break
 
-        # 3. Default fallback
+        # 4. Unknown / Encrypted flows: Use ML Random Forest prediction
         if not matched_class:
-            # UDP defaults to video/voice or bulk depending on port, TCP defaults to web
-            if flow.proto == "udp":
-                matched_class = "bulk"
-            else:
-                matched_class = "web"
+            logger.info("Flow %s did not match standard rules. Applying ML classifier...", key)
+            mean_pkt = float(packet_size or (1440 if flow.proto == "tcp" else 600))
+            pred_class, conf = self.ml_classifier.predict(
+                mean_packet_size=mean_pkt,
+                std_packet_size=50.0,
+                mean_inter_arrival_time=float(inter_arrival_time or 0.02),
+                std_inter_arrival_time=0.005,
+                flow_duration=5.0,
+                bytes_per_sec=float(mean_pkt * 80),
+            )
+            matched_class = pred_class
 
         self.flow_cache[key] = matched_class
         logger.debug("Classified flow %s as '%s'", key, matched_class)
         return matched_class
+
+    def classify_with_ml(
+        self,
+        flow: Flow5Tuple,
+        mean_packet_size: float,
+        std_packet_size: float,
+        mean_inter_arrival_time: float,
+        std_inter_arrival_time: float,
+        flow_duration: float,
+        bytes_per_sec: float,
+    ) -> Tuple[str, float]:
+        """Direct invocation of Random Forest ML classifier with full statistical features."""
+        pred_class, confidence = self.ml_classifier.predict(
+            mean_packet_size=mean_packet_size,
+            std_packet_size=std_packet_size,
+            mean_inter_arrival_time=mean_inter_arrival_time,
+            std_inter_arrival_time=std_inter_arrival_time,
+            flow_duration=flow_duration,
+            bytes_per_sec=bytes_per_sec,
+        )
+        self.flow_cache[flow.to_key()] = pred_class
+        return pred_class, confidence
+
+    def get_ml_info(self) -> Dict[str, Any]:
+        """Returns the ML model accuracy, confusion matrix, and feature importances."""
+        info = self.ml_classifier.get_model_info()
+        info["ml_mode_active"] = self.ml_mode
+        return info
 
     def get_cache_size(self) -> int:
         return len(self.flow_cache)

@@ -9,8 +9,10 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 
+from backend.api.routes_classifier import router as classifier_router
 from backend.api.routes_events import router as events_router
 from backend.api.routes_flows import router as flows_router
+from backend.api.routes_meters import router as meters_router
 from backend.api.routes_policies import router as policies_router
 from backend.api.routes_scenarios import router as scenarios_router
 from backend.api.routes_telemetry import router as telemetry_router
@@ -59,6 +61,8 @@ app.include_router(policies_router)
 app.include_router(events_router)
 app.include_router(scenarios_router)
 app.include_router(topology_router)
+app.include_router(classifier_router)
+app.include_router(meters_router)
 
 
 @app.get("/")

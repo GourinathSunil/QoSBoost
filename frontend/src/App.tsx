@@ -9,7 +9,7 @@ import { DemoPage } from './pages/DemoPage';
 import { AboutPage } from './pages/AboutPage';
 
 export const App: React.FC = () => {
-  const { activeTab, fetchData, setTelemetry, useMock, setUseMock } = useQoSStore();
+  const { activeTab, fetchData, setTelemetry, useMock, setUseMock, isLoading, errorMessage, dismissError } = useQoSStore();
   const wsRef = useRef<WebSocket | null>(null);
 
   // Initial REST fetch & WebSocket connection
@@ -69,8 +69,55 @@ export const App: React.FC = () => {
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: 'var(--color-canvas)' }}>
+      {/* Top Loading Progress Line */}
+      {isLoading && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '2px',
+            backgroundColor: 'var(--color-primary)',
+            zIndex: 9999,
+            animation: 'pulse 1.5s infinite',
+          }}
+        />
+      )}
+
       {/* Top Navigation */}
       <TopNav />
+
+      {/* Dismissible Error Banner */}
+      {errorMessage && (
+        <div
+          style={{
+            backgroundColor: 'rgba(229, 72, 77, 0.15)',
+            borderBottom: '1px solid rgba(229, 72, 77, 0.3)',
+            padding: '10px 24px',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            fontSize: '13px',
+            color: '#e5484d',
+          }}
+        >
+          <span>{errorMessage}</span>
+          <button
+            onClick={dismissError}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: '#e5484d',
+              cursor: 'pointer',
+              fontWeight: 600,
+              padding: '2px 8px',
+            }}
+          >
+            ✕ Dismiss
+          </button>
+        </div>
+      )}
 
       {/* Main Content Area */}
       <main style={{ flex: 1, maxWidth: '1280px', width: '100%', margin: '0 auto', padding: 'var(--space-xl) var(--space-lg)' }}>
